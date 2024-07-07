@@ -6,6 +6,12 @@ TaxiApp is a microservices-based taxi application built using Microsoft Service 
 
 TaxiApp is designed to manage taxi bookings with different user roles: Admin, User, and Driver. The application provides functionalities for user registration, ride creation and tracking, and driver verification.
 
+## Services
+
+### Web Stateless Service
+
+- **UserService**: Handles user interface interactions, including login and register.
+
 ## Technologies
 
 - .NET Core

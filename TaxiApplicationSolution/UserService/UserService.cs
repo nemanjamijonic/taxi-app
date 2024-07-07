@@ -33,45 +33,59 @@ namespace UserService
         {
             return new ServiceInstanceListener[]
             {
-        new ServiceInstanceListener(serviceContext =>
-            new KestrelCommunicationListener(serviceContext, "ServiceEndpoint", (url, listener) =>
-            {
-                ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
+                new ServiceInstanceListener(serviceContext =>
+                    new KestrelCommunicationListener(serviceContext, "ServiceEndpoint", (url, listener) =>
+                    {
+                        ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
 
-                var builder = WebApplication.CreateBuilder();
+                        var builder = WebApplication.CreateBuilder();
 
-                builder.Services.AddSingleton<StatelessServiceContext>(serviceContext);
-                builder.Services.AddControllers();
-                builder.Services.AddEndpointsApiExplorer();
-                builder.Services.AddSwaggerGen();
+                        builder.Services.AddSingleton<StatelessServiceContext>(serviceContext);
+                        builder.Services.AddControllers();
+                        builder.Services.AddEndpointsApiExplorer();
+                        builder.Services.AddSwaggerGen();
 
-                // Register UserDbContext and other services
-                builder.Services.AddDbContext<UserDbContext>(options =>
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                        // Register UserDbContext and other services
+                        builder.Services.AddDbContext<UserDbContext>(options =>
+                            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-                builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+                        builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
-                builder.WebHost
-                    .UseKestrel()
-                    .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)
-                    .UseUrls(url);
+                        // Add CORS policy
+                        builder.Services.AddCors(options =>
+                        {
+                            options.AddDefaultPolicy(builder =>
+                            {
+                                builder.AllowAnyOrigin()
+                                       .AllowAnyMethod()
+                                       .AllowAnyHeader();
+                            });
+                        });
 
-                var app = builder.Build();
+                        builder.WebHost
+                            .UseKestrel()
+                            .UseContentRoot(Directory.GetCurrentDirectory())
+                            .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)
+                            .UseUrls(url);
 
-                if (app.Environment.IsDevelopment())
-                {
-                    app.UseSwagger();
-                    app.UseSwaggerUI();
-                }
+                        var app = builder.Build();
 
-                app.UseAuthorization();
-                app.MapControllers();
+                        if (app.Environment.IsDevelopment())
+                        {
+                            app.UseSwagger();
+                            app.UseSwaggerUI();
+                        }
 
-                return app;
-            }))
+                        app.UseAuthorization();
+
+                        // Use CORS
+                        app.UseCors();
+
+                        app.MapControllers();
+
+                        return app;
+                    }))
             };
         }
-
     }
 }
