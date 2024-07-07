@@ -24,6 +24,8 @@ namespace UserService.Controllers
             _userDbContext = userDbContext;
             _configuration = configuration;
         }
+
+
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
