@@ -1,34 +1,21 @@
-using System;
-using System.Collections.Generic;
 using System.Fabric;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
-using Microsoft.ServiceFabric.Data;
 using Microsoft.EntityFrameworkCore;
 using UserService.Database;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace UserService
 {
-    /// <summary>
-    /// The FabricRuntime creates an instance of this class for each service type instance.
-    /// </summary>
     internal sealed class UserService : StatelessService
     {
         public UserService(StatelessServiceContext context)
             : base(context)
         { }
 
-        /// <summary>
-        /// Optional override to create listeners (like tcp, http) for this service instance.
-        /// </summary>
-        /// <returns>The collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
             return new ServiceInstanceListener[]
@@ -62,6 +49,32 @@ namespace UserService
                             });
                         });
 
+                        // JWT Authentication
+                        var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
+                        builder.Services.AddAuthentication(x =>
+                        {
+                            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                        })
+                        .AddJwtBearer(x =>
+                        {
+                            x.RequireHttpsMetadata = false;
+                            x.SaveToken = true;
+                            x.TokenValidationParameters = new TokenValidationParameters
+                            {
+                                ValidateIssuerSigningKey = true,
+                                IssuerSigningKey = new SymmetricSecurityKey(key),
+                                ValidateIssuer = false,
+                                ValidateAudience = false
+                            };
+                        });
+
+                        // Ensure that WebRootPath is set correctly
+                        if (string.IsNullOrEmpty(builder.Environment.WebRootPath))
+                        {
+                            builder.Environment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                        }
+
                         builder.WebHost
                             .UseKestrel()
                             .UseContentRoot(Directory.GetCurrentDirectory())
@@ -76,10 +89,16 @@ namespace UserService
                             app.UseSwaggerUI();
                         }
 
+                        app.UseAuthentication();
                         app.UseAuthorization();
 
                         // Use CORS
-                        app.UseCors();
+                        app.UseCors(options =>
+                        {
+                            options.AllowAnyOrigin()
+                                   .AllowAnyMethod()
+                                   .AllowAnyHeader();
+                        });
 
                         app.MapControllers();
 

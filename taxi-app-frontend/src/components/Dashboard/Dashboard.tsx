@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../Navbar/Navbar";
 import "./Dashboard.css";
-
-interface DecodedToken {
-  unique_name: string;
-  email: string;
-  role: string;
-}
 
 const Dashboard: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -21,22 +15,22 @@ const Dashboard: React.FC = () => {
     if (!token) {
       navigate("/login");
     } else {
-      const decodedToken = jwtDecode<DecodedToken>(token);
-      setUsername(decodedToken.unique_name);
-      setEmail(decodedToken.email);
-      setUserType(decodedToken.role);
-
-      // Fetch user image URL
-      fetch("http://localhost:8969/api/User/get-image-url", {
+      // Fetch user data
+      fetch("http://localhost:8766/api/User/user", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => response.json())
         .then((data) => {
-          setUserImage(data.imageUrl);
+          setUsername(data.username);
+          setEmail(data.email);
+          setUserType(data.userType);
+          setUserImage(
+            `http://localhost:8766/api/User/get-image/${data.imagePath}`
+          );
         })
-        .catch((error) => console.error("Error fetching user image:", error));
+        .catch((error) => console.error("Error fetching user data:", error));
     }
   }, [navigate]);
 
@@ -47,6 +41,12 @@ const Dashboard: React.FC = () => {
 
   return (
     <div>
+      <Navbar
+        username={username}
+        userType={userType}
+        userImage={userImage}
+        onLogout={handleLogout} 
+      />
       <br></br>
       <div className="dashboard-content">
         <h1>Welcome to the Dashboard</h1>

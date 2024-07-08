@@ -1,18 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace UserService.Dto
+﻿namespace UserService.Dto
 {
-    public class RegisterDto
+    public class EditProfileDto
     {
         public string Username { get; set; }
-        public string Email { get; set; }
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public string DateOfBirth { get; set; }
         public string Address { get; set; }
-        public string UserType { get; set; }
-        public IFormFile UserImage { get; set; } // Dodato
+        public IFormFile UserImage { get; set; }
     }
 }

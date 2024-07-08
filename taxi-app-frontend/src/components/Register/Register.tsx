@@ -15,6 +15,7 @@ type RegisterFormInputs = {
   dateOfBirth: string; // Change Date type to string
   address: string;
   userType: string;
+  userImage: FileList;
 };
 
 const Register: React.FC = () => {
@@ -29,18 +30,25 @@ const Register: React.FC = () => {
     // Convert dateOfBirth to a Date object
     const dateOfBirth = new Date(data.dateOfBirth);
 
-    const payload = {
-      ...data,
-      dateOfBirth: dateOfBirth.toISOString(),
-    };
+    const formData = new FormData();
+    formData.append("username", data.username);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("confirmPassword", data.confirmPassword);
+    formData.append("firstName", data.firstName);
+    formData.append("lastName", data.lastName);
+    formData.append("dateOfBirth", dateOfBirth.toISOString());
+    formData.append("address", data.address);
+    formData.append("userType", data.userType);
+    formData.append("userImage", data.userImage[0]);
 
     try {
       const response = await axios.post(
         "http://localhost:8766/api/Auth/register",
-        payload,
+        formData,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -128,6 +136,13 @@ const Register: React.FC = () => {
             <option value="Driver">Driver</option>
           </select>
           {errors.userType && (
+            <span className="error">This field is required</span>
+          )}
+        </div>
+        <div className="form-group">
+          <label>User Image</label>
+          <input type="file" {...register("userImage", { required: true })} />
+          {errors.userImage && (
             <span className="error">This field is required</span>
           )}
         </div>

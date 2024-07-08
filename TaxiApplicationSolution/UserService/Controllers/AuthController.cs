@@ -8,6 +8,8 @@ using System.Security.Claims;
 using System.Text;
 using UserService.Database;
 using UserService.Dto;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace UserService.Controllers
 {
@@ -15,14 +17,15 @@ namespace UserService.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-
         private readonly UserDbContext _userDbContext;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public AuthController(UserDbContext userDbContext, IConfiguration configuration)
+        public AuthController(UserDbContext userDbContext, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             _userDbContext = userDbContext;
             _configuration = configuration;
+            _webHostEnvironment = webHostEnvironment;
         }
 
 
@@ -40,7 +43,7 @@ namespace UserService.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromForm] RegisterDto registerDto)
         {
             if (_userDbContext.Users.Any(u => u.Email == registerDto.Email))
             {
@@ -54,6 +57,27 @@ namespace UserService.Controllers
 
             var hashedPassword = HashHelper.HashPassword(registerDto.Password);
 
+            // Save the image to the server
+            var imagePath = "";
+            if (registerDto.UserImage != null)
+            {
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + registerDto.UserImage.FileName;
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+
+                // Ensure the directory exists
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await registerDto.UserImage.CopyToAsync(fileStream);
+                }
+                imagePath = "/images/" + uniqueFileName;
+            }
+
             var user = new User
             {
                 Username = registerDto.Username,
@@ -65,7 +89,8 @@ namespace UserService.Controllers
                 IsDeleted = false,
                 CreatedAt = DateTime.UtcNow.AddHours(2),
                 DateOfBirth = registerDto.DateOfBirth.Date,
-                Address = registerDto.Address
+                Address = registerDto.Address,
+                ImagePath = imagePath
             };
 
             if (registerDto.UserType.Equals("Driver"))
@@ -84,6 +109,7 @@ namespace UserService.Controllers
 
             return Ok(new { token, message = "Registration successful" });
         }
+
 
 
         private string GenerateJwtToken(User user)
