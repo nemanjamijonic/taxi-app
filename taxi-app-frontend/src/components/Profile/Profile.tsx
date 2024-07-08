@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import Navbar from "../Navbar/Navbar";
 import "./Profile.css";
 
 interface ProfileData {
@@ -30,6 +31,9 @@ const Profile: React.FC = () => {
     formState: { errors },
   } = useForm<ProfileData>();
   const [imageUrl, setImageUrl] = useState("");
+  const [username, setUsername] = useState("");
+  const [userType, setUserType] = useState("");
+  const [userImage, setUserImage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,7 +45,7 @@ const Profile: React.FC = () => {
 
       fetch(`http://localhost:8766/api/User/user`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Ovde koristi originalni JWT token
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => response.json())
@@ -56,10 +60,21 @@ const Profile: React.FC = () => {
           setImageUrl(
             `http://localhost:8766/api/User/get-image/${data.imagePath}`
           );
+
+          setUsername(data.username);
+          setUserType(data.userType);
+          setUserImage(
+            `http://localhost:8766/api/User/get-image/${data.imagePath}`
+          );
         })
         .catch((error) => console.error("Error fetching profile data:", error));
     }
   }, [navigate, setValue]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("jwtToken");
+    navigate("/login");
+  };
 
   const onSubmit = (data: ProfileData) => {
     const token = localStorage.getItem("jwtToken");
@@ -92,72 +107,85 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="profile-container">
-      <h2>Profile</h2>
-      {imageUrl && <img src={imageUrl} alt="User" className="profile-image" />}
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="form-group">
-          <label>Username</label>
-          <input type="text" {...register("username", { required: true })} />
-          {errors.username && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            {...register("email", { required: true })}
-            readOnly
-          />
-          {errors.email && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Password</label>
-          <input type="password" {...register("password")} />
-        </div>
-        <div className="form-group">
-          <label>Confirm Password</label>
-          <input type="password" {...register("confirmPassword")} />
-        </div>
-        <div className="form-group">
-          <label>First Name</label>
-          <input type="text" {...register("firstName", { required: true })} />
-          {errors.firstName && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Last Name</label>
-          <input type="text" {...register("lastName", { required: true })} />
-          {errors.lastName && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Date of Birth</label>
-          <input type="date" {...register("dateOfBirth", { required: true })} />
-          {errors.dateOfBirth && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Address</label>
-          <input type="text" {...register("address", { required: true })} />
-          {errors.address && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>User Image</label>
-          <input type="file" {...register("userImage")} />
-        </div>
-        <button className="button-profile" type="submit">
-          Update Profile
-        </button>
-      </form>
+    <div>
+      <Navbar
+        username={username}
+        userType={userType}
+        userImage={userImage}
+        onLogout={handleLogout}
+      />
+      <div className="profile-container">
+        <h2>Profile</h2>
+        {imageUrl && (
+          <img src={imageUrl} alt="User" className="profile-image" />
+        )}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="form-group">
+            <label>Username</label>
+            <input type="text" {...register("username", { required: true })} />
+            {errors.username && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              {...register("email", { required: true })}
+              readOnly
+            />
+            {errors.email && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input type="password" {...register("password")} />
+          </div>
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <input type="password" {...register("confirmPassword")} />
+          </div>
+          <div className="form-group">
+            <label>First Name</label>
+            <input type="text" {...register("firstName", { required: true })} />
+            {errors.firstName && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Last Name</label>
+            <input type="text" {...register("lastName", { required: true })} />
+            {errors.lastName && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Date of Birth</label>
+            <input
+              type="date"
+              {...register("dateOfBirth", { required: true })}
+            />
+            {errors.dateOfBirth && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Address</label>
+            <input type="text" {...register("address", { required: true })} />
+            {errors.address && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>User Image</label>
+            <input type="file" {...register("userImage")} />
+          </div>
+          <button className="button-profile" type="submit">
+            Update Profile
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

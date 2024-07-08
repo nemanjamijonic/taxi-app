@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Routes, Route } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
+import Verification from "../Verification/Verification";
 import "./Dashboard.css";
 
 const Dashboard: React.FC = () => {
@@ -15,7 +16,6 @@ const Dashboard: React.FC = () => {
     if (!token) {
       navigate("/login");
     } else {
-      // Fetch user data
       fetch("http://localhost:8766/api/User/user", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -45,15 +45,10 @@ const Dashboard: React.FC = () => {
         username={username}
         userType={userType}
         userImage={userImage}
-        onLogout={handleLogout} 
+        onLogout={handleLogout}
       />
       <br></br>
-      <div className="dashboard-content">
-        <h1>Welcome to the Dashboard</h1>
-        <p>Username: {username}</p>
-        <p>Email: {email}</p>
-        <p>User Type: {userType}</p>
-      </div>
+      <div className="dashboard-content"></div>
     </div>
   );
 };

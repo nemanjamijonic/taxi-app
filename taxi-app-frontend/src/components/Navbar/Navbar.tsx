@@ -46,7 +46,7 @@ const Navbar: React.FC<NavbarProps> = ({
               </button>
             </>
           )}
-          {userType === "2" && (
+          {userType == "2" && (
             <>
               <button onClick={() => handleNavigation("/new-rides")}>
                 New Rides

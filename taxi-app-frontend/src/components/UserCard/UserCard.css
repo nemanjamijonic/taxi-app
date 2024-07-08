@@ -1,0 +1,28 @@
+.user-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px;
+  color: red;
+  width: 450px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-card p {
+  margin: 8px 0;
+}
+
+.user-card button {
+  background-color: #007bff;
+  color: #fff;
+  width: 90%;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.user-card button:hover {
+  background-color: #0056b3;
+}

@@ -91,6 +91,8 @@ namespace UserService.Controllers
             return Ok(users);
         }
 
+
+
         [HttpGet("user")]
         public async Task<IActionResult> GetUserProfile()
         {
@@ -128,6 +130,56 @@ namespace UserService.Controllers
                 user.ImagePath
             });
         }
+
+
+
+        [HttpGet("unverified-drivers")]
+        public async Task<IActionResult> GetUnverifiedDrivers()
+        {
+            var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var jwtToken = authHeader.Replace("Bearer ", "");
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+            var userIdClaim = decodedToken.Claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var user = await _userDbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            if (user.UserType != UserType.Admin) 
+            {
+                Unauthorized(new { message = "Invalid role." });
+            }
+            else 
+            {
+                var users = await _userDbContext.Users
+                .Where(u => !u.IsDeleted && u.UserState == UserState.Created && u.UserType == UserType.Driver)
+                .ToListAsync();
+
+                if (users == null || !users.Any())
+                {
+                    return NotFound("Users not found");
+                }
+
+                return Ok(users);
+            }
+
+            return Unauthorized(new { message = "Invalid role." });
+           
+        }
+
 
 
         [HttpPost("update-profile")]
@@ -187,7 +239,6 @@ namespace UserService.Controllers
 
         // Metoda za validaciju vozača
         [HttpPost("validate/{userId}")]
-        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> ValidateDriver(Guid userId)
         {
             var user = await _userDbContext.Users.FindAsync(userId);
