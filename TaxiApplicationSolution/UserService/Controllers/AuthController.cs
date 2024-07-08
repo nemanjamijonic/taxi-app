@@ -113,6 +113,11 @@ namespace UserService.Controllers
                 UserType = user.UserType.ToString()
             };
 
+
+
+            _userDbContext.Users.Add(user);
+            _userDbContext.SaveChanges();
+
             emailInfo.Id = user.Id;
 
             var emailServiceProxy = ServiceProxy.Create<IEmailInterface>(
@@ -120,10 +125,6 @@ namespace UserService.Controllers
                 );
 
             var emailSent = await emailServiceProxy.UserRegistrationEmail(emailInfo);
-
-
-            _userDbContext.Users.Add(user);
-            _userDbContext.SaveChanges();
 
             var token = GenerateJwtToken(user);
 

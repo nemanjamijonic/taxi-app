@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService", "UserService\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{864E4FE0-330E-4604-A6A3-65BAAB6B0157}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailService", "EmailService\EmailService.csproj", "{2A0BBB22-F1E7-485B-9834-1B04AB526E27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailService", "EmailService\EmailService.csproj", "{2A0BBB22-F1E7-485B-9834-1B04AB526E27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriveService", "DriveService\DriveService.csproj", "{41A77E8F-5A43-4D57-9EDA-20D701AC1E88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,14 @@ Global
 		{2A0BBB22-F1E7-485B-9834-1B04AB526E27}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2A0BBB22-F1E7-485B-9834-1B04AB526E27}.Release|x64.ActiveCfg = Release|Any CPU
 		{2A0BBB22-F1E7-485B-9834-1B04AB526E27}.Release|x64.Build.0 = Release|Any CPU
+		{41A77E8F-5A43-4D57-9EDA-20D701AC1E88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41A77E8F-5A43-4D57-9EDA-20D701AC1E88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41A77E8F-5A43-4D57-9EDA-20D701AC1E88}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{41A77E8F-5A43-4D57-9EDA-20D701AC1E88}.Debug|x64.Build.0 = Debug|Any CPU
+		{41A77E8F-5A43-4D57-9EDA-20D701AC1E88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41A77E8F-5A43-4D57-9EDA-20D701AC1E88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41A77E8F-5A43-4D57-9EDA-20D701AC1E88}.Release|x64.ActiveCfg = Release|Any CPU
+		{41A77E8F-5A43-4D57-9EDA-20D701AC1E88}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

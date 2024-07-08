@@ -18,6 +18,7 @@ TaxiApp is designed to manage taxi bookings with different user roles: Admin, Us
 ### Web Stateless Service
 
 - **UserService**: Handles user interface interactions, including login and register.
+- **DriveService** Handles creation of new Taxi Drive, Drivers Rating...
 
 ### Stateless Service
 
