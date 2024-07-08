@@ -7,6 +7,7 @@ TaxiApp is a microservices-based taxi application built using Microsoft Service 
 - [Project Description](#project-description)
 - [Services](#services)
 - [Technologies](#technologies)
+- [Installation](#installation)
 
 ## Project Description
 
@@ -42,11 +43,13 @@ TaxiApp is designed to manage taxi bookings with different user roles: Admin, Us
    - Find TaxiApplicationSolution.sln file. You can find this file on this route: location-where-you-cloned-repo/TaxiApp/TaxiApplicationSolution/TaxiApplicationSolution.sln.
 
 3. Frontend Application
+
    - Frontned Application is App developed using React.js
    - Make sure you have Node.js installed on your computer.
    - Position to this folder in Terminal: location-where-you-cloned-repo/TaxiApp/taxi-app-frontend
    - You can use cmd (Command Prompt) or Terminal integrated in Visual Studio Code.
    - Run next commands:
+
    ```bash
    npm install
    npm run
