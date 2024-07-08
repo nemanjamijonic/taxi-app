@@ -4,10 +4,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mail;
+using System.Net;
 using System.Security.Claims;
 using UserService.Database;
 using UserService.Dto;
+using Common.Interfaces;
+using Common.Models;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
 
 namespace UserService.Controllers
 {
@@ -252,10 +258,30 @@ namespace UserService.Controllers
             {
                 user.UserState = UserState.Verified;
                 await _userDbContext.SaveChangesAsync();
-                return Ok("Driver validated successfully");
+
+                EmailInfo emailInfo = new EmailInfo()
+                {
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Id = userId,
+                    UserType = user.UserType.ToString()
+                };
+
+                var emailServiceProxy = ServiceProxy.Create<IEmailInterface>(
+                new Uri("fabric:/TaxiApplication/EmailService")
+               );
+
+                var emailSent = await emailServiceProxy.DriverVerificationEmail(emailInfo);
+
+                return Ok("Succesfully validated driver!");
             }
 
             return BadRequest("User is not a driver");
         }
+
+
+
     }
 }

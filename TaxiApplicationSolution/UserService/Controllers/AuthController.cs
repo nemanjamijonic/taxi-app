@@ -10,6 +10,9 @@ using UserService.Database;
 using UserService.Dto;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
+using Common.Interfaces;
+using Common.Models;
 
 namespace UserService.Controllers
 {
@@ -101,6 +104,23 @@ namespace UserService.Controllers
             {
                 user.UserType = UserType.User;
             }
+
+            EmailInfo emailInfo = new EmailInfo() {
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                UserType = user.UserType.ToString()
+            };
+
+            emailInfo.Id = user.Id;
+
+            var emailServiceProxy = ServiceProxy.Create<IEmailInterface>(
+                    new Uri("fabric:/TaxiApplication/EmailService")
+                );
+
+            var emailSent = await emailServiceProxy.UserRegistrationEmail(emailInfo);
+
 
             _userDbContext.Users.Add(user);
             _userDbContext.SaveChanges();

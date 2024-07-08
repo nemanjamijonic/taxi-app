@@ -19,6 +19,10 @@ TaxiApp is designed to manage taxi bookings with different user roles: Admin, Us
 
 - **UserService**: Handles user interface interactions, including login and register.
 
+### Stateless Service
+
+- **EmailService**: Sends E-mail after registration and driver verification.
+
 ## Technologies
 
 - .NET Core
@@ -52,5 +56,5 @@ TaxiApp is designed to manage taxi bookings with different user roles: Admin, Us
 
    ```bash
    npm install
-   npm run
+   npm start
    ```
