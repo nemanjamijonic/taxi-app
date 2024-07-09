@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Routes, Route } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
-import Verification from "../Verification/Verification";
 import "./Dashboard.css";
 
 const Dashboard: React.FC = () => {

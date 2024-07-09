@@ -9,6 +9,7 @@ interface User {
   username: string;
   userState: string;
   email: string;
+  userType: string;
   firstName: string;
   lastName: string;
 }

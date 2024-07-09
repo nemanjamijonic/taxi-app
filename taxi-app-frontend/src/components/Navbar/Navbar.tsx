@@ -34,10 +34,16 @@ const Navbar: React.FC<NavbarProps> = ({
               <button onClick={() => handleNavigation("/all-rides")}>
                 All Rides
               </button>
+              <button onClick={() => handleNavigation("/all-users")}>
+                All Users
+              </button>
             </>
           )}
           {userType == "1" && (
             <>
+              <button onClick={() => handleNavigation("/dashboard")}>
+                Dashboard
+              </button>
               <button onClick={() => handleNavigation("/create-drive")}>
                 New Ride
               </button>

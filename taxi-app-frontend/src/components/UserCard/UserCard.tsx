@@ -7,6 +7,7 @@ interface UserCardProps {
     username: string;
     userState: string;
     email: string;
+    userType: string;
     firstName: string;
     lastName: string;
   };
@@ -22,10 +23,19 @@ const UserCard: React.FC<UserCardProps> = ({ user, onVerify }) => {
       <p>
         <strong>Email:</strong> {user.email}
       </p>
+      {user.userType == "1" ? (
+        <p>
+          <strong>Type:</strong> User
+        </p>
+      ) : (
+        <p>
+          <strong>Type:</strong> Driver
+        </p>
+      )}
       <p>
         <strong>Name:</strong> {user.firstName} {user.lastName}
       </p>
-      {user.userState === "0" ? (
+      {user.userState == "0" ? (
         <p>
           <strong>Status:</strong> Unverified
         </p>

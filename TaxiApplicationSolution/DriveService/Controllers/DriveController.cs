@@ -10,6 +10,7 @@ using Microsoft.ServiceFabric.Services.Client;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Common.Interfaces;
 using Common.Models;
+using System.Fabric.Query;
 
 namespace DriveService.Controllers
 {
@@ -70,7 +71,7 @@ namespace DriveService.Controllers
             }
 
             // Get all drives for the user
-            var userDrives = await _context.Drives.Where(d => d.UserId == userId && !d.IsDeleted).ToListAsync();
+            var userDrives = await _context.Drives.Where(d => d.UserId == userId && !d.IsDeleted && d.DriveState == DriveState.DriveCompleted).ToListAsync();
 
             return Ok(userDrives);
         }
@@ -122,18 +123,6 @@ namespace DriveService.Controllers
                 return Unauthorized(new { message = "Invalid token." });
             }
 
-            ServicePartitionKey partition = new ServicePartitionKey(long.Parse("1"));
-
-            var statefulProxy = ServiceProxy.Create<ICalculationInterface>(
-                new Uri("fabric:/TaxiApplication/DriveCalculation"),
-                partition
-            );
-
-
-            var estimatedTime = await statefulProxy.EstimateTime();
-            var estimatedCost = await statefulProxy.EstimatePrice();
-
-
             if (createDriveDto == null)
             {
                 return BadRequest("Drive data is null");
@@ -144,20 +133,96 @@ namespace DriveService.Controllers
                 StartingAddress = createDriveDto.StartingAddress,
                 EndingAddress = createDriveDto.EndingAddress,
                 CreatedAt = DateTime.Now.AddHours(2),
-                AproximatedTime = estimatedTime,
-                AproximatedCost = estimatedCost,
                 DriveState = DriveState.UserOrderedDrive,
                 UserId = Guid.Parse(userId.ToString())
             };
-
-
-
 
             _context.Drives.Add(drive);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetDriveById), new { id = drive.Id }, drive);
         }
+
+
+        [HttpPost("create-offer/{id}")]
+        public async Task<ActionResult<Drive>> DriverMakesOffer(Guid id)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            // Decode the JWT token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+
+            // Retrieve all claims from the decoded token
+            var claims = decodedToken.Claims.ToList();
+
+            // Find the 'nameid' claim and get its value
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var drive = await _context.Drives.FindAsync(id);
+
+            if (drive == null)
+            {
+                return NotFound();
+            }
+
+            ServicePartitionKey partition = new ServicePartitionKey(long.Parse("1"));
+            var statefulProxy = ServiceProxy.Create<ICalculationInterface>(
+               new Uri("fabric:/TaxiApplication/DriveCalculation"),
+               partition
+           );
+
+
+            var estimatedTime = await statefulProxy.EstimateTime();
+            var estimatedCost = await statefulProxy.EstimatePrice();
+
+            drive.AproximatedCost = estimatedCost;
+            drive.AproximatedTime = estimatedTime;
+            drive.DriverId = userId;
+            drive.DriveState = DriveState.DriverCreatedOffer;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(drive);
+        }
+
+        [HttpPost("accept-drive/{id}")]
+        public async Task<ActionResult<Drive>> UserAceptDrive(Guid id)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            // Decode the JWT token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+
+            // Retrieve all claims from the decoded token
+            var claims = decodedToken.Claims.ToList();
+
+            // Find the 'nameid' claim and get its value
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var drive = await _context.Drives.FindAsync(id);
+
+            if (drive == null)
+            {
+                return NotFound();
+            }
+
+            drive.DriveState = DriveState.UserAceptedDrive;
+
+            return Ok(drive);
+        }
+
 
         [HttpGet("drive/{id}")]
         public async Task<ActionResult<Drive>> GetDriveById(Guid id)

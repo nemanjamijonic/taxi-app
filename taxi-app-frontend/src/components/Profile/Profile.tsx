@@ -106,6 +106,12 @@ const Profile: React.FC = () => {
       .catch((error) => console.error("Error updating profile:", error));
   };
 
+  const userTypeText = (type: string) => {
+    if (userType == "0") return "Admin";
+    if (userType == "1") return "User";
+    if (userType == "2") return "Driver";
+  };
+
   return (
     <div>
       <Navbar
@@ -170,6 +176,11 @@ const Profile: React.FC = () => {
               <span className="error">This field is required</span>
             )}
           </div>
+          <div className="form-group">
+            <label>User Type</label>
+            <input type="text" value={userTypeText(userType)} readOnly />
+          </div>
+
           <div className="form-group">
             <label>Address</label>
             <input type="text" {...register("address", { required: true })} />

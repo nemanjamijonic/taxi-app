@@ -7,10 +7,10 @@ namespace Common.Enums
     public enum DriveState
     {
         UserOrderedDrive,
-        DriverEstimatingTimeAndCost,
         DriverCreatedOffer,
         UserAceptedDrive,
         UserDeclinedDrive,
+        DriveActive,
         DriveCompleted
     }
 }

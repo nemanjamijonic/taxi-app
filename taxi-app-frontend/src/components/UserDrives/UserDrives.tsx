@@ -3,6 +3,7 @@ import axios from "axios";
 import DriveItem from "../DriveItem/DriveItem";
 import Navbar from "../Navbar/Navbar";
 import "./UserDrives.css";
+import { useNavigate } from "react-router-dom";
 
 type Drive = {
   id: string; // Dodato, da bi svaki Drive imao jedinstveni ključ
@@ -19,12 +20,13 @@ const UserDrives: React.FC = () => {
   const [username, setUsername] = useState("");
   const [userType, setUserType] = useState("");
   const [userImage, setUserImage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDrives = async () => {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
-        throw new Error("No token found, please log in.");
+        navigate("/login");
       }
 
       const response = await axios.get(
@@ -84,6 +86,7 @@ const UserDrives: React.FC = () => {
           drives.map((drive) => (
             <div className="drive-item-container" key={drive.id}>
               <DriveItem
+                id={drive.id} // Dodato
                 startingAddress={drive.startingAddress}
                 endingAddress={drive.endingAddress}
                 createdAt={drive.createdAt}
