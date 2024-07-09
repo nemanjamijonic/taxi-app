@@ -1,0 +1,12 @@
+.drive-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  color: red;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.drive-item p {
+  margin: 5px 0;
+}

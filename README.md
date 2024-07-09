@@ -18,11 +18,15 @@ TaxiApp is designed to manage taxi bookings with different user roles: Admin, Us
 ### Web Stateless Service
 
 - **UserService**: Handles user interface interactions, including login and register.
-- **DriveService** Handles creation of new Taxi Drive, Drivers Rating...
+- **DriveService**: Handles creation of new Taxi Drive, Drivers Rating...
 
 ### Stateless Service
 
 - **EmailService**: Sends E-mail after registration and driver verification.
+
+### Stateful Service
+
+- **DriveCalculation**: Estimates drive price and time for specific drive.
 
 ## Technologies
 
@@ -37,8 +41,8 @@ TaxiApp is designed to manage taxi bookings with different user roles: Admin, Us
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/TaxiAppServiceFabric.git
-   cd TaxiAppServiceFabric
+   git clone https://github.com/M1jonicN/TaxiApp.git
+   cd TaxiApp
 
    ```
 
@@ -58,4 +62,5 @@ TaxiApp is designed to manage taxi bookings with different user roles: Admin, Us
    ```bash
    npm install
    npm start
+
    ```

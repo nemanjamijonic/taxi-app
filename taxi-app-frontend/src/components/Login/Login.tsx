@@ -21,7 +21,7 @@ const Login: React.FC = () => {
   const onSubmit = async (data: LoginFormInputs) => {
     try {
       const response = await axios.post(
-        "http://localhost:8766/api/Auth/login",
+        `${process.env.REACT_APP_BACKEND_URL_AUTH_API}/login`,
         data
       );
       const token = response.data.token;

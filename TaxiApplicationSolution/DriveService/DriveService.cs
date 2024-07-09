@@ -41,6 +41,16 @@ namespace DriveService
 
                         builder.Services.AddSingleton<StatelessServiceContext>(serviceContext);
 
+                         builder.Services.AddCors(options =>
+                        {
+                            options.AddDefaultPolicy(builder =>
+                            {
+                                builder.AllowAnyOrigin()
+                                       .AllowAnyMethod()
+                                       .AllowAnyHeader();
+                            });
+                        });
+
                         // Add DbContext with SQL Server provider
                         builder.Services.AddDbContext<DriveDbContext>(options =>
                             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -63,6 +73,14 @@ namespace DriveService
                         }
 
                         app.UseAuthorization();
+
+                        app.UseCors(options =>
+                        {
+                            options.AllowAnyOrigin()
+                                   .AllowAnyMethod()
+                                   .AllowAnyHeader();
+                        });
+
                         app.MapControllers();
 
                         return app;

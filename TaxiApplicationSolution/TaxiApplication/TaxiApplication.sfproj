@@ -36,6 +36,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DriveCalculation\DriveCalculation.csproj" />
     <ProjectReference Include="..\DriveService\DriveService.csproj">
       <ServiceLaunchUrl>http://localhost:{ServicePort}/swagger</ServiceLaunchUrl>
     </ProjectReference>

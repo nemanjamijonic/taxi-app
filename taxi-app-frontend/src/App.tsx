@@ -5,6 +5,9 @@ import Register from "./components/Register/Register";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Profile from "./components/Profile/Profile";
 import Verification from "./components/Verification/Verification";
+import CreateDrive from "./components/NewRide/CreateDrive";
+import UserDrives from "./components/UserDrives/UserDrives";
+
 import "./App.css";
 
 const App: React.FC = () => {
@@ -18,6 +21,8 @@ const App: React.FC = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/verification" element={<Verification />} />
+          <Route path="/create-drive" element={<CreateDrive />} />
+          <Route path="/previous-rides" element={<UserDrives />} />
         </Routes>
       </div>
     </Router>

@@ -48,7 +48,9 @@ const Dashboard: React.FC = () => {
         onLogout={handleLogout}
       />
       <br></br>
-      <div className="dashboard-content"></div>
+      <div className="dashboard-content">
+        <h1>Welcome {username} </h1>
+      </div>
     </div>
   );
 };
