@@ -7,6 +7,7 @@ import Profile from "./components/Profile/Profile";
 import Verification from "./components/Verification/Verification";
 import CreateDrive from "./components/NewRide/CreateDrive";
 import UserDrives from "./components/UserDrives/UserDrives";
+import DriveList from "./components/DriveList/DriveList";
 
 import "./App.css";
 
@@ -23,6 +24,7 @@ const App: React.FC = () => {
           <Route path="/verification" element={<Verification />} />
           <Route path="/create-drive" element={<CreateDrive />} />
           <Route path="/previous-rides" element={<UserDrives />} />
+          <Route path="/new-driver-rides" element={<DriveList />} />
         </Routes>
       </div>
     </Router>

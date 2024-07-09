@@ -1,10 +1,21 @@
 .user-drives {
-  max-width: 800px;
+  max-width: 1200px; /* Povećano za više prostora */
   margin: 0 auto;
   padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .user-drives h2 {
+  width: 100%;
   text-align: center;
+  margin-bottom: 20px;
+}
+
+.drive-item-container {
+  margin-left: 20px;
+  flex: 1 1 calc(33.333% - 20px); /* Tri po redu sa razmakom */
+  box-sizing: border-box;
   margin-bottom: 20px;
 }

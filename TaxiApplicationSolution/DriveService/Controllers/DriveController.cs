@@ -27,6 +27,23 @@ namespace DriveService.Controllers
         [HttpGet("drives")]
         public async Task<ActionResult<IEnumerable<Drive>>> GetAllDrives()
         {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            // Decode the JWT token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+
+            // Retrieve all claims from the decoded token
+            var claims = decodedToken.Claims.ToList();
+
+            // Find the 'nameid' claim and get its value
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
             var drives = await _context.Drives.Where(d => !d.IsDeleted).ToListAsync();
             return Ok(drives);
         }
@@ -57,7 +74,33 @@ namespace DriveService.Controllers
 
             return Ok(userDrives);
         }
-        
+
+
+        [HttpGet("new-driver-drives")]
+        public async Task<ActionResult<IEnumerable<Drive>>> GetNewDriverDrives()
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            // Decode the JWT token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+
+            // Retrieve all claims from the decoded token
+            var claims = decodedToken.Claims.ToList();
+
+            // Find the 'nameid' claim and get its value
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var drives = await _context.Drives
+                                       .Where(d => d.DriveState == DriveState.UserOrderedDrive && !d.IsDeleted)
+                                       .ToListAsync();
+            return Ok(drives);
+        }
 
         [HttpPost("drive")]
         public async Task<ActionResult<Drive>> CreateDrive([FromBody] CreateDriveDto createDriveDto)
@@ -119,6 +162,23 @@ namespace DriveService.Controllers
         [HttpGet("drive/{id}")]
         public async Task<ActionResult<Drive>> GetDriveById(Guid id)
         {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            // Decode the JWT token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+
+            // Retrieve all claims from the decoded token
+            var claims = decodedToken.Claims.ToList();
+
+            // Find the 'nameid' claim and get its value
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
             var drive = await _context.Drives.FindAsync(id);
 
             if (drive == null)
