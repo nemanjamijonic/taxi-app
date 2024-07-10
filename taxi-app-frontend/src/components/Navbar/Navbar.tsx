@@ -29,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({
           {userType == "0" && (
             <>
               <button onClick={() => handleNavigation("/verification")}>
-                Verification
+                Driver Verification List
               </button>
               <button onClick={() => handleNavigation("/all-rides")}>
                 All Rides

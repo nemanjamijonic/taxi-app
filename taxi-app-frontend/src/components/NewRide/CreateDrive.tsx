@@ -3,11 +3,13 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
+import { jwtDecode } from "jwt-decode"; // Import jwt-decode library
 import "./CreateDrive.css";
 
 type CreateDriveFormInputs = {
   startingAddress: string;
   endingAddress: string;
+  userUsername: string;
 };
 
 const CreateDrive: React.FC = () => {
@@ -15,6 +17,7 @@ const CreateDrive: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue, // Use setValue to set the form field value programmatically
   } = useForm<CreateDriveFormInputs>();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -27,6 +30,13 @@ const CreateDrive: React.FC = () => {
       navigate("/login");
     } else {
       const fetchUserData = async () => {
+        const decodedToken: any = jwtDecode(token); // Decode the JWT token
+
+        // Extract the username from the unique_name claim
+        const extractedUsername = decodedToken.unique_name;
+        setUsername(extractedUsername);
+
+        // Fetch additional user data from your backend if needed
         const userResponse = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL_USER_API}/user`,
           {
@@ -37,16 +47,18 @@ const CreateDrive: React.FC = () => {
         );
 
         const userData = userResponse.data;
-        setUsername(userData.username);
         setUserType(userData.userType);
         setUserImage(
           `http://localhost:8766/api/User/get-image/${userData.imagePath}`
         );
+
+        // Set the userUsername field in the form
+        setValue("userUsername", extractedUsername);
       };
 
       fetchUserData();
     }
-  }, [navigate]);
+  }, [navigate, setValue]);
 
   const onSubmit = async (data: CreateDriveFormInputs) => {
     try {
@@ -69,7 +81,15 @@ const CreateDrive: React.FC = () => {
         navigate("/previous-rides"); // Navigate to the drives list page
       }
     } catch (error) {
-      console.error(error);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 409) {
+          alert("You can't create a drive. You have unfinished drives.");
+        } else {
+          console.error("Error response status:", error.response.status);
+        }
+      } else {
+        console.error("Error:", error);
+      }
     }
   };
 

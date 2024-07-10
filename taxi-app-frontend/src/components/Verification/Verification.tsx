@@ -95,6 +95,38 @@ const Verification: React.FC = () => {
     }
   };
 
+  const handleRejection = async (userId: string) => {
+    const token = localStorage.getItem("jwtToken");
+    try {
+      const response = await fetch(
+        `http://localhost:8766/api/User/reject/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        // Update the user state in the unverifiedUsers array
+        setUnverifiedUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === userId ? { ...user, userState: "2" } : user
+          )
+        );
+        alert("Driver rejected successfully");
+      } else {
+        const errorMessage = await response.text();
+        alert(`Error: ${errorMessage}`);
+      }
+    } catch (error) {
+      console.error("Error rejecting driver:", error);
+      alert("An error occurred while rejecting the driver.");
+    }
+  };
+
   return (
     <div>
       <Navbar
@@ -110,7 +142,12 @@ const Verification: React.FC = () => {
         ) : (
           <div className="user-grid">
             {unverifiedUsers.map((user) => (
-              <UserCard key={user.id} user={user} onVerify={handleVerify} />
+              <UserCard
+                key={user.id}
+                user={user}
+                onVerify={handleVerify}
+                onRejection={handleRejection}
+              />
             ))}
           </div>
         )}

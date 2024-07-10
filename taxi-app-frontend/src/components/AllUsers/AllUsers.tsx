@@ -84,6 +84,10 @@ const AllUsers: React.FC = () => {
     }
   };
 
+  const handleRejection = async (userId: string) => {
+    return;
+  };
+
   return (
     <div>
       <Navbar
@@ -96,7 +100,12 @@ const AllUsers: React.FC = () => {
         <h2>All Users</h2>
         <div className="user-list">
           {users.map((user) => (
-            <UserCard key={user.id} user={user} onVerify={handleVerify} />
+            <UserCard
+              key={user.id}
+              user={user}
+              onVerify={handleVerify}
+              onRejection={handleRejection}
+            />
           ))}
         </div>
       </div>

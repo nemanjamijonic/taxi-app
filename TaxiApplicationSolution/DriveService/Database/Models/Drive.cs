@@ -6,7 +6,9 @@ namespace DriveService.Database.Models
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
+        public string UserUsername { get; set; }
         public Guid DriverId { get; set; }
+        public string DriverUsername { get; set; }
         public double AproximatedTime { get; set; }
         public double AproximatedCost { get; set; }
         public DateTime CreatedAt { get; set; }

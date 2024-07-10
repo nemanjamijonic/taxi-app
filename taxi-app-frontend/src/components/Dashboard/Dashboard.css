@@ -3,6 +3,16 @@
   margin-top: 50px;
 }
 
+.disable-interaction {
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.dashboard-container {
+  pointer-events: auto;
+  opacity: 1;
+}
+
 body {
   background-color: #004d4d;
   color: white;

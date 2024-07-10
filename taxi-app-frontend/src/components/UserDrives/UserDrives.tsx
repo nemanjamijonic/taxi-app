@@ -10,6 +10,8 @@ type Drive = {
   startingAddress: string;
   endingAddress: string;
   createdAt: string;
+  userUsername: string;
+  driverUsername: string;
   aproximatedTime: number;
   aproximatedCost: number;
   driveState: string;
@@ -79,7 +81,7 @@ const UserDrives: React.FC = () => {
         onLogout={handleLogout}
       />
       <div className="user-drives">
-        <h2>Your Drives</h2>
+        <h2>Your Completed Drives</h2>
         {drives.length === 0 ? (
           <p>No drives found.</p>
         ) : (
@@ -90,6 +92,8 @@ const UserDrives: React.FC = () => {
                 startingAddress={drive.startingAddress}
                 endingAddress={drive.endingAddress}
                 createdAt={drive.createdAt}
+                userUsername={drive.userUsername}
+                driverUsername={drive.driverUsername}
                 aproximatedTime={drive.aproximatedTime}
                 aproximatedCost={drive.aproximatedCost}
                 driveState={drive.driveState}

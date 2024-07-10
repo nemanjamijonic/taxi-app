@@ -6,34 +6,35 @@ type DriveItemProps = {
   startingAddress: string;
   endingAddress: string;
   createdAt: string;
+  userUsername: string;
+  driverUsername: string;
   aproximatedTime: number;
   aproximatedCost: number;
   driveState: string;
-  userType: string; // Dodato
-  onAcceptDrive?: () => void; // Dodato, funkcija koja će biti pozvana kada se klikne dugme
-  onCreateOffer?: () => void; // Dodato, funkcija koja će biti pozvana kada se klikne dugme
+  userType: string;
+  onAcceptDrive?: () => void;
+  onDeclineDrive?: () => void;
+  onCreateOffer?: () => void;
 };
 
 const DriveItem: React.FC<DriveItemProps> = ({
-  id, // Dodato
+  id,
   startingAddress,
   endingAddress,
   createdAt,
+  userUsername,
+  driverUsername,
   aproximatedTime,
   aproximatedCost,
   driveState,
   userType,
-  onAcceptDrive, // Dodato
-  onCreateOffer, // Dodato
+  onAcceptDrive,
+  onDeclineDrive,
+  onCreateOffer,
 }) => {
-  const handleCreateOffer = async () => {
-    if (onCreateOffer) {
-      onCreateOffer();
-    }
-  };
-
   return (
     <div className="drive-item">
+      <h2>{id}</h2>
       <p>
         <strong>Starting Address:</strong> {startingAddress}
       </p>
@@ -44,6 +45,12 @@ const DriveItem: React.FC<DriveItemProps> = ({
         <strong>Created At:</strong> {new Date(createdAt).toLocaleString()}
       </p>
       <p>
+        <strong>Drive Created By:</strong> {userUsername}
+      </p>
+      <p>
+        <strong>Offer By Driver:</strong> {driverUsername}
+      </p>
+      <p>
         <strong>Approx. Time:</strong> {aproximatedTime} seconds
       </p>
       <p>
@@ -52,13 +59,19 @@ const DriveItem: React.FC<DriveItemProps> = ({
       <p>
         <strong>State:</strong> {driveState == "0" ? "User Ordered Ride" : ""}
         {driveState == "1" ? "Driver Created Offer" : ""}
+        {driveState == "2" ? "User Accepted Drive" : ""}
+        {driveState == "3" ? "User Declined Drive" : ""}
+        {driveState == "4" ? "Drive Active" : ""}
         {driveState == "5" ? "Drive Completed" : ""}
       </p>
-      {userType === "1" && (
-        <button onClick={onAcceptDrive}>Accept Drive</button>
+      {userType == "1" && driveState == "1" && (
+        <>
+          <button onClick={onAcceptDrive}>Accept Drive</button>
+          <button onClick={onDeclineDrive}>Decline Drive</button>
+        </>
       )}
       {userType === "2" && (
-        <button onClick={handleCreateOffer}>Create offer</button>
+        <button onClick={onCreateOffer}>Create Offer</button>
       )}
     </div>
   );

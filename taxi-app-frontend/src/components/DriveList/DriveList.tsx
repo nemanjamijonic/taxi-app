@@ -10,6 +10,8 @@ type DriveItemProps = {
   startingAddress: string;
   endingAddress: string;
   createdAt: string;
+  userUsername: string;
+  driverUsername: string;
   aproximatedTime: number;
   aproximatedCost: number;
   driveState: string;
@@ -62,7 +64,14 @@ const DriveList: React.FC = () => {
             },
           }
         );
-        setDrives(response.data);
+
+        // Ensure userUsername is correctly populated
+        const drivesData = response.data.map((drive: any) => ({
+          ...drive,
+          userUsername: drive.userUsername || "Unknown User",
+        }));
+
+        setDrives(drivesData);
       } catch (err) {
         setError("Failed to fetch drives.");
         console.error(err);
@@ -72,16 +81,12 @@ const DriveList: React.FC = () => {
     fetchDrives();
   }, [navigate]);
 
-  const handleAcceptDrive = (driveId: string) => {
-    // Implementirajte logiku za prihvatanje vožnje
-    console.log(`Drive accepted: ${driveId}`);
-  };
-
-  const handleCreateOffer = async (driveId: string) => {
+  const handleAcceptDrive = async (driveId: string) => {
     try {
       const token = localStorage.getItem("jwtToken");
+
       await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/create-offer/${driveId}`,
+        `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/accept-drive/${driveId}`,
         {},
         {
           headers: {
@@ -89,7 +94,39 @@ const DriveList: React.FC = () => {
           },
         }
       );
-      // Osvježite listu vožnji nakon uspešnog kreiranja ponude
+
+      // Refresh the list of drives after a successful offer creation
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/new-driver-drives`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setDrives(response.data);
+    } catch (err) {
+      setError("Failed to accept drive.");
+      console.error(err);
+    }
+  };
+
+  const handleCreateOffer = async (driveId: string) => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      const driverUsername = username; // assuming `username` state holds the driver's username
+
+      await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/create-offer/${driveId}`,
+        { DriverUsername: driverUsername }, // include DriverUsername in the request body
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Refresh the list of drives after a successful offer creation
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/new-driver-drives`,
         {
@@ -131,12 +168,14 @@ const DriveList: React.FC = () => {
               startingAddress={drive.startingAddress}
               endingAddress={drive.endingAddress}
               createdAt={drive.createdAt}
+              userUsername={drive.userUsername}
+              driverUsername={drive.driverUsername}
               aproximatedTime={drive.aproximatedTime}
               aproximatedCost={drive.aproximatedCost}
               driveState={drive.driveState}
               userType={"2"}
               onAcceptDrive={() => handleAcceptDrive(drive.id)}
-              onCreateOffer={() => handleCreateOffer(drive.id)} // Dodato
+              onCreateOffer={() => handleCreateOffer(drive.id)}
             />
           ))
         )}

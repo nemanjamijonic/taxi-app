@@ -12,9 +12,16 @@ interface UserCardProps {
     lastName: string;
   };
   onVerify: (userId: string) => void;
+  onRejection: (userId: string) => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ user, onVerify }) => {
+const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
+  const getUserState = (state: string) => {
+    if (state == "0") return "Unverified";
+    if (state == "1") return "Verified";
+    if (state == "2") return "Rejected";
+  };
+
   return (
     <div className="user-card">
       <p>
@@ -35,16 +42,11 @@ const UserCard: React.FC<UserCardProps> = ({ user, onVerify }) => {
       <p>
         <strong>Name:</strong> {user.firstName} {user.lastName}
       </p>
-      {user.userState == "0" ? (
-        <p>
-          <strong>Status:</strong> Unverified
-        </p>
-      ) : (
-        <p>
-          <strong>Status:</strong> Verified
-        </p>
-      )}
+      <p>
+        <strong>Status:</strong> {getUserState(user.userState)}
+      </p>
       <button onClick={() => onVerify(user.id)}>Verify Driver</button>
+      <button onClick={() => onRejection(user.id)}>Reject Driver</button>
     </div>
   );
 };

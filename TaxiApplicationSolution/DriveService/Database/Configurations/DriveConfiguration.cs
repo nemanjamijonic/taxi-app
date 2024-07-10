@@ -16,8 +16,16 @@ namespace DriveService.Database.Configurations
             builder.Property(d => d.UserId)
                 .IsRequired();
 
+            builder.Property(d => d.UserUsername)
+               .IsRequired()
+               .HasMaxLength(100);
+
             builder.Property(d => d.DriverId)
                 .IsRequired();
+
+            builder.Property(d => d.DriverUsername)
+               .IsRequired()
+               .HasMaxLength(100);
 
             builder.Property(d => d.AproximatedTime)
                 .IsRequired();

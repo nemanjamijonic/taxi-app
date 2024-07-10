@@ -7,6 +7,7 @@ namespace Common.Enums
     public enum UserState
     {
         Created,
-        Verified
+        Verified,
+        Rejected
     }
 }

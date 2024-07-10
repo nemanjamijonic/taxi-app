@@ -24,6 +24,64 @@ namespace EmailService
             : base(context)
         { }
 
+        public async Task<bool> DriverRejectionEmail(EmailInfo emailInfo)
+        {
+            try
+            {
+                string smtpServer = "smtp.gmail.com";
+                int port = 587;
+
+                // Adresa i lozinka za autentifikaciju na SMTP serveru
+                string smtpUsername = "forumdrs2023@gmail.com";
+                string smtpPassword = "wtez cskt ddtm uqbx";
+                string fromEmail = "forumdrs2023@gmail.com";
+                string subject = $"Driver Account Has Been Rejected For User: {emailInfo.Username}";
+
+                string htmlContent = $@"
+                <html>
+                <body>
+                    <h1>Account Rejected : {emailInfo.Id}</h1>
+                    <p>Dear {emailInfo.FirstName} {emailInfo.LastName},</p>
+                    <p>We are sorry to inform you that your driver account has been rejected.</p>
+                    <p>You can now access our system but can't use all functionalities of application.</p>
+                    <p>Best regards,<br/>Taxi Service Team</p>
+                </body>
+                </html>";
+
+                string plainTextContent = $@"
+                Account Rejected: {emailInfo.Id}.
+                Dear {emailInfo.FirstName} {emailInfo.LastName},
+                We are sorry to inform you that your driver account has been rejected.
+                You can now access our system but can't use all functionalities of application.
+                Best regards,
+                Taxi Service Team";
+
+                using (var client = new SmtpClient(smtpServer, port))
+                {
+                    client.EnableSsl = true;
+                    client.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
+
+                    using (var message = new MailMessage(fromEmail, emailInfo.Email))
+                    {
+                        message.Subject = subject;
+                        message.IsBodyHtml = true;
+                        message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(plainTextContent, null, "text/plain"));
+                        message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(htmlContent, null, "text/html"));
+
+                        await client.SendMailAsync(message);
+                        Trace.TraceInformation("Email sent successfully.");
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"Error while sending mail: {ex.Message}");
+                return false;
+            }
+        }
+
         public async Task<bool> DriverVerificationEmail(EmailInfo emailInfo)
         {
             try
@@ -35,7 +93,7 @@ namespace EmailService
                 string smtpUsername = "forumdrs2023@gmail.com";
                 string smtpPassword = "wtez cskt ddtm uqbx";
                 string fromEmail = "forumdrs2023@gmail.com";
-                string subject = "Driver Account Has Been Verified For User";
+                string subject = $"Driver Account Has Been Verified For User {emailInfo.Username}";
 
                 string htmlContent = $@"
                 <html>

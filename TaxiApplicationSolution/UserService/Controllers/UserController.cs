@@ -298,7 +298,42 @@ namespace UserService.Controllers
             return BadRequest("User is not a driver");
         }
 
+        [HttpPost("reject/{userId}")]
+        public async Task<IActionResult> RejectDriver(Guid userId)
+        {
+            var user = await _userDbContext.Users.FindAsync(userId);
 
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            if (user.UserType == UserType.Driver)
+            {
+                user.UserState = UserState.Rejected;
+                await _userDbContext.SaveChangesAsync();
+
+                EmailInfo emailInfo = new EmailInfo()
+                {
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Id = userId,
+                    UserType = user.UserType.ToString()
+                };
+
+                var emailServiceProxy = ServiceProxy.Create<IEmailInterface>(
+                new Uri("fabric:/TaxiApplication/EmailService")
+               );
+
+                var emailSent = await emailServiceProxy.DriverRejectionEmail(emailInfo);
+
+                return Ok("Succesfully rejected driver!");
+            }
+
+            return BadRequest("User is not a driver");
+        }
 
     }
 }

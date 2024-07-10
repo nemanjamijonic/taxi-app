@@ -11,5 +11,6 @@ namespace Common.Interfaces
     {
         Task<bool> UserRegistrationEmail(EmailInfo emailInfo);
         Task<bool> DriverVerificationEmail(EmailInfo emailInfo);
+        Task<bool> DriverRejectionEmail(EmailInfo emailInfo);
     }
 }
