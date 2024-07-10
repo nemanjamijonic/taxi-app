@@ -17,7 +17,9 @@ interface UserCardProps {
 
 const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
   const getUserState = (state: string) => {
-    if (state == "0") return "Unverified";
+    if (state == "0" && user.userType == "2") return "Unverified";
+    if (state == "0" && user.userType == "1") return "Verified";
+    if (state == "0" && user.userType == "0") return "Verified";
     if (state == "1") return "Verified";
     if (state == "2") return "Rejected";
   };
@@ -45,8 +47,12 @@ const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
       <p>
         <strong>Status:</strong> {getUserState(user.userState)}
       </p>
-      <button onClick={() => onVerify(user.id)}>Verify Driver</button>
-      <button onClick={() => onRejection(user.id)}>Reject Driver</button>
+      {user.userType == "2" && (
+        <>
+          <button onClick={() => onVerify(user.id)}>Verify Driver</button>
+          <button onClick={() => onRejection(user.id)}>Reject Driver</button>
+        </>
+      )}
     </div>
   );
 };

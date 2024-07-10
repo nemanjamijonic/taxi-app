@@ -1,0 +1,14 @@
+.drive-list {
+  padding: 20px;
+}
+
+.drive-list h1 {
+  margin-bottom: 20px;
+}
+
+.drive-list .drive-item {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}

@@ -49,6 +49,32 @@ namespace DriveService.Controllers
             return Ok(drives);
         }
 
+        [HttpGet("all-user-drives")]
+        public async Task<ActionResult<IEnumerable<Drive>>> GetAllDrivesByUser()
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            // Decode the JWT token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+
+            // Retrieve all claims from the decoded token
+            var claims = decodedToken.Claims.ToList();
+
+            // Find the 'nameid' claim and get its value
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            // Get all drives for the user
+            var userDrives = await _context.Drives.Where(d => d.DriverId == userId && !d.IsDeleted).ToListAsync();
+
+            return Ok(userDrives);
+        }
+
 
         [HttpGet("user-drives")]
         public async Task<ActionResult<IEnumerable<Drive>>> GetDrivesByUser()

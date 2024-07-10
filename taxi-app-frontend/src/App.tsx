@@ -9,6 +9,8 @@ import CreateDrive from "./components/NewRide/CreateDrive";
 import UserDrives from "./components/UserDrives/UserDrives";
 import DriveList from "./components/DriveList/DriveList";
 import AllUsers from "./components/AllUsers/AllUsers";
+import AllDrives from "./components/AllDrives/AllDrives";
+import MyRides from "./components/MyRides/MyRides";
 
 import "./App.css";
 
@@ -27,6 +29,8 @@ const App: React.FC = () => {
           <Route path="/previous-rides" element={<UserDrives />} />
           <Route path="/new-driver-rides" element={<DriveList />} />
           <Route path="/all-users" element={<AllUsers />} />
+          <Route path="/all-drives" element={<AllDrives />} />
+          <Route path="/my-rides" element={<MyRides />} />
         </Routes>
       </div>
     </Router>

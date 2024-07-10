@@ -96,6 +96,8 @@ namespace UserService.Controllers
                 ImagePath = imagePath
             };
 
+
+
             if (registerDto.UserType.Equals("Driver"))
             {
                 user.UserType = UserType.Driver;
@@ -103,6 +105,16 @@ namespace UserService.Controllers
             else if (registerDto.UserType.Equals("User"))
             {
                 user.UserType = UserType.User;
+            }
+
+            if(user.UserType == UserType.User) 
+            {
+                user.UserState = UserState.Verified;
+            }
+
+            if (user.UserType == UserType.Admin)
+            {
+                user.UserState = UserState.Verified;
             }
 
             EmailInfo emailInfo = new EmailInfo() {

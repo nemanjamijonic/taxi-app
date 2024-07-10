@@ -31,7 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({
               <button onClick={() => handleNavigation("/verification")}>
                 Driver Verification List
               </button>
-              <button onClick={() => handleNavigation("/all-rides")}>
+              <button onClick={() => handleNavigation("/all-drives")}>
                 All Rides
               </button>
               <button onClick={() => handleNavigation("/all-users")}>
