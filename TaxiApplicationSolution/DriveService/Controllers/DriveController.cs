@@ -157,7 +157,10 @@ namespace DriveService.Controllers
             var usersDrives = _context.Drives.Where(d => d.UserId == userId);
             foreach (var usersDrive in usersDrives) 
             {
-                if (usersDrive.DriveState != DriveState.DriveCompleted) 
+                if (usersDrive.DriveState == DriveState.UserOrderedDrive ||
+                    usersDrive.DriveState == DriveState.DriverCreatedOffer ||
+                    usersDrive.DriveState == DriveState.UserAceptedDrive ||
+                    usersDrive.DriveState == DriveState.DriveActive) 
                 {
                     return Conflict("You already have unfinished drives!");
                 }
@@ -404,7 +407,7 @@ namespace DriveService.Controllers
             var claims = decodedToken.Claims.ToList();
 
             // Find the 'nameid' claim and get its value
-            var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+           var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
 
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
             {
@@ -413,7 +416,7 @@ namespace DriveService.Controllers
 
             // Get the current active drive for the user
             var currentUserDrive = await _context.Drives
-                                                 .Where(d => d.UserId == userId && !d.IsDeleted && d.DriveState != DriveState.DriveCompleted)
+                                                 .Where(d => d.UserId == userId && !d.IsDeleted && d.DriveState != DriveState.DriveCompleted && d.DriveState != DriveState.UserDeclinedDrive)
                                                  .FirstOrDefaultAsync();
 
             if (currentUserDrive == null)
@@ -424,6 +427,38 @@ namespace DriveService.Controllers
             return Ok(currentUserDrive);
         }
 
+        [HttpGet("current-driver-drive")]
+        public async Task<ActionResult<Drive>> GetCurrentDriveByDriver()
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            // Decode the JWT token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+
+            // Retrieve all claims from the decoded token
+            var claims = decodedToken.Claims.ToList();
+
+            // Find the 'nameid' claim and get its value
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var driverId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            // Get the current active drive for the user
+            var currentUserDrive = await _context.Drives
+                                                 .Where(d => d.DriverId == driverId && !d.IsDeleted && d.DriveState != DriveState.DriveCompleted && d.DriveState != DriveState.UserDeclinedDrive)
+                                                 .FirstOrDefaultAsync();
+
+            if (currentUserDrive == null)
+            {
+                return NotFound(new { message = "No active drive found for the driver." });
+            }
+
+            return Ok(currentUserDrive);
+        }
 
 
     }

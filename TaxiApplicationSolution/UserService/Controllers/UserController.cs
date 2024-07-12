@@ -96,10 +96,6 @@ namespace UserService.Controllers
             return File(image, mimeType);
         }
 
-
-
-
-
         [HttpGet("users")]
         public async Task<IActionResult> GetAllActiveUsers()
         {
@@ -205,8 +201,6 @@ namespace UserService.Controllers
 
             return Ok(new { message = "Profile updated successfully" });
         }
-
-
 
 
         [HttpGet("unverified-drivers")]

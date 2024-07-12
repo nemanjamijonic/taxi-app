@@ -91,7 +91,29 @@ const AllUsers: React.FC = () => {
   };
 
   const handleRejection = async (userId: string) => {
-    // Implement rejection logic here
+    const token = localStorage.getItem("jwtToken");
+    try {
+      const response = await fetch(
+        `http://localhost:8766/api/User/reject/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === userId ? { ...user, userState: "1" } : user
+          )
+        );
+      } else {
+        console.error("Error rejecting user:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error rejecting user:", error);
+    }
   };
 
   return (

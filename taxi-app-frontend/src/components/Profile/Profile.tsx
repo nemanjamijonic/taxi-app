@@ -114,7 +114,7 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="profile-div">
       <Navbar
         username={username}
         userType={userType}

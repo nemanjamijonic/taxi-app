@@ -53,6 +53,9 @@ const Navbar: React.FC<NavbarProps> = ({
         )}
         {userType == "2" && (
           <>
+            <button onClick={() => handleNavigation("/dashboard")}>
+              Dashboard
+            </button>
             <button onClick={() => handleNavigation("/new-driver-rides")}>
               New Rides
             </button>
@@ -72,5 +75,5 @@ const Navbar: React.FC<NavbarProps> = ({
     </nav>
   );
 };
-  
+
 export default Navbar;

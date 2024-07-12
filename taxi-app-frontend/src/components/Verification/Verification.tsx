@@ -137,8 +137,6 @@ const Verification: React.FC = () => {
         onLogout={handleLogout}
       />
       <div className="verification-content">
-        <p>{userType}</p>
-        <h1>Unverified Drivers</h1>
         {unverifiedUsers.length === 0 ? (
           <h2>No unverified users found.</h2>
         ) : (

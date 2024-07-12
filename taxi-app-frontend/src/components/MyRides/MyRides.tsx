@@ -111,26 +111,29 @@ const MyRides: React.FC = () => {
         onLogout={handleLogout}
       />
       <div className="ride-list">
+        <br></br>
         <h1>My Rides</h1>
-        {drives.length === 0 ? (
-          <p>No rides available.</p>
-        ) : (
-          drives.map((drive) => (
-            <DriveItem
-              key={drive.id}
-              id={drive.id}
-              startingAddress={drive.startingAddress}
-              endingAddress={drive.endingAddress}
-              createdAt={drive.createdAt}
-              userUsername={drive.userUsername}
-              driverUsername={drive.driverUsername}
-              aproximatedTime={drive.aproximatedTime}
-              aproximatedCost={drive.aproximatedCost}
-              driveState={drive.driveState}
-              userType={drive.userType}
-            />
-          ))
-        )}
+        <div className="drive-items-container">
+          {drives.length === 0 ? (
+            <p>No rides available.</p>
+          ) : (
+            drives.map((drive) => (
+              <DriveItem
+                key={drive.id}
+                id={drive.id}
+                startingAddress={drive.startingAddress}
+                endingAddress={drive.endingAddress}
+                createdAt={drive.createdAt}
+                userUsername={drive.userUsername}
+                driverUsername={drive.driverUsername}
+                aproximatedTime={drive.aproximatedTime}
+                aproximatedCost={drive.aproximatedCost}
+                driveState={drive.driveState}
+                userType={drive.userType}
+              />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

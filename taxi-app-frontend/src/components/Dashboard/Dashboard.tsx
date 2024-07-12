@@ -41,6 +41,8 @@ const Dashboard: React.FC = () => {
       }
       const decodedToken: any = jwtDecode(token);
       const userId = decodedToken.nameid;
+      const userRole = decodedToken.role; // Get the user role from the token
+      console.log(userRole);
       const userResponse = await axios.get(
         "http://localhost:8766/api/User/user",
         {
@@ -56,14 +58,17 @@ const Dashboard: React.FC = () => {
       setEmail(userData.email);
       setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
 
-      const driveResponse = await axios.get(
-        "http://localhost:8351/api/Drive/current-user-drive",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // Determine the appropriate endpoint based on the user role
+      const endpoint =
+        userRole == "User"
+          ? "http://localhost:8351/api/Drive/current-user-drive"
+          : "http://localhost:8351/api/Drive/current-driver-drive";
+
+      const driveResponse = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setUserDrive(driveResponse.data);
       if (driveResponse.data.driveState == 2) {
@@ -218,6 +223,11 @@ const Dashboard: React.FC = () => {
         <p>
           <strong>Email:</strong> {email}
         </p>
+        {userType == "2" && (
+          <>
+            <p>userstate</p>
+          </>
+        )}
         <p>
           <strong>User Type:</strong> {userType == "1" ? "User" : "Driver"}
         </p>

@@ -1,5 +1,29 @@
 .App {
   text-align: center;
+  width: 100%;
+  padding-bottom: 60px;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  background: linear-gradient(
+      217deg,
+      rgba(91, 134, 246, 0.8),
+      rgba(91, 134, 246, 0) 70.71%
+    ),
+    linear-gradient(
+      127deg,
+      rgba(74, 133, 189, 0.8),
+      rgba(74, 133, 189, 0) 70.71%
+    ),
+    linear-gradient(
+      336deg,
+      rgba(51, 107, 137, 0.8),
+      rgba(51, 107, 137, 0) 70.71%
+    );
 }
 
 .App-logo {
@@ -35,4 +59,98 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Additions for UserDrives */
+.user-drives {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center align items horizontally */
+  align-items: flex-start; /* Align items to the start of the flex container */
+}
+
+.user-drives h2 {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff; /* White color for better visibility on gradient background */
+  font-size: 2rem; /* Larger font size */
+}
+
+.drive-item-container {
+  flex: 1 1 calc(33.333% - 40px); /* Three per row with 20px gap */
+  margin: 10px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .drive-item-container {
+    flex: 1 1 calc(50% - 40px); /* Two per row on smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .drive-item-container {
+    flex: 1 1 calc(100% - 40px); /* One per row on extra small screens */
+  }
+}
+
+/* Styles for DriveItem */
+.drive-item {
+  border: 1px solid #ccc;
+  padding: 20px; /* Increased padding for better spacing */
+  max-width: 440px;
+  width: 100%;
+  color: #333;
+  border-radius: 8px; /* Rounded corners */
+  background-color: #fff; /* White background for better contrast */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: transform 0.2s; /* Smooth hover effect */
+}
+
+.drive-item:hover {
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.drive-item h1 {
+  color: #6a11cb; /* Green color for drive ID */
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  text-align: center; /* Center align text */
+}
+
+.drive-item hr {
+  border: 1px solid #2575fc;
+}
+
+.drive-item p {
+  text-align: left;
+  margin: 5px 0;
+  font-size: 1rem; /* Standard font size */
+}
+
+.drive-item strong {
+  color: #007bff; /* Blue color for strong text */
+}
+
+.drive-item button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff; /* Blue background */
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.drive-item button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
 }

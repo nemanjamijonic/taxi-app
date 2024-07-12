@@ -34,7 +34,8 @@ const DriveItem: React.FC<DriveItemProps> = ({
 }) => {
   return (
     <div className="drive-item">
-      <h2>{id}</h2>
+      <h1>{id}</h1>
+      <hr></hr>
       <p>
         <strong>Starting Address:</strong> {startingAddress}
       </p>
@@ -57,12 +58,13 @@ const DriveItem: React.FC<DriveItemProps> = ({
         <strong>Approx. Cost:</strong> ${aproximatedCost}
       </p>
       <p>
-        <strong>State:</strong> {driveState == "0" ? "User Ordered Ride" : ""}
-        {driveState == "1" ? "Driver Created Offer" : ""}
-        {driveState == "2" ? "User Accepted Drive" : ""}
-        {driveState == "3" ? "User Declined Drive" : ""}
-        {driveState == "4" ? "Drive Active" : ""}
-        {driveState == "5" ? "Drive Completed" : ""}
+        <strong>State:</strong>
+        {driveState == "0" && "User Ordered Ride"}
+        {driveState == "1" && "Driver Created Offer"}
+        {driveState == "2" && "User Accepted Drive"}
+        {driveState == "3" && "User Declined Drive"}
+        {driveState == "4" && "Drive Active"}
+        {driveState == "5" && "Drive Completed"}
       </p>
       {userType == "1" && driveState == "1" && (
         <>
@@ -70,7 +72,9 @@ const DriveItem: React.FC<DriveItemProps> = ({
           <button onClick={onDeclineDrive}>Decline Drive</button>
         </>
       )}
-      {userType == "2" && <button onClick={onCreateOffer}>Create Offer</button>}
+      {userType == "2" && driveState == "0" && (
+        <button onClick={onCreateOffer}>Create Offer</button>
+      )}
     </div>
   );
 };

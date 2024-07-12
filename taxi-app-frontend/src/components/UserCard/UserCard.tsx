@@ -47,7 +47,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
       <p>
         <strong>Status:</strong> {getUserState(user.userState)}
       </p>
-      {user.userType == "2" && (
+      {user.userType == "2" && user.userState == "0" && (
         <>
           <button onClick={() => onVerify(user.id)}>Verify Driver</button>
           <button onClick={() => onRejection(user.id)}>Reject Driver</button>

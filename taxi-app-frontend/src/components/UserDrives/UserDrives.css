@@ -1,21 +1,25 @@
 .user-drives {
-  max-width: 1200px; /* Povećano za više prostora */
+  max-width: 1500px;
   margin: 0 auto;
   padding: 20px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center; /* Center align items horizontally */
+  align-items: flex-start; /* Align items to the start of the flex container */
 }
 
 .user-drives h2 {
   width: 100%;
   text-align: center;
   margin-bottom: 20px;
+  color: #fff; /* White color for better visibility on gradient background */
+  font-size: 2rem; /* Larger font size */
 }
 
 .drive-item-container {
-  margin-left: 20px;
-  flex: 1 1 calc(33.333% - 20px); /* Tri po redu sa razmakom */
+  flex: 1 1 calc(33.333% - 40px); /* Three per row with 20px gap */
+  margin: 10px;
   box-sizing: border-box;
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
 }
