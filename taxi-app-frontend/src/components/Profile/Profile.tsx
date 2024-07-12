@@ -19,7 +19,8 @@ interface ProfileData {
 }
 
 interface DecodedToken {
-  unique_name: string;
+  nameid: string;
+  username: string;
   role: string;
 }
 
@@ -58,13 +59,13 @@ const Profile: React.FC = () => {
           setValue("address", data.address);
           setValue("userType", data.userType);
           setImageUrl(
-            `http://localhost:8766/api/User/get-image/${data.imagePath}`
+            `http://localhost:8766/api/User/get-image/${decodedToken.nameid}`
           );
 
           setUsername(data.username);
           setUserType(data.userType);
           setUserImage(
-            `http://localhost:8766/api/User/get-image/${data.imagePath}`
+            `http://localhost:8766/api/User/get-image/${decodedToken.nameid}`
           );
         })
         .catch((error) => console.error("Error fetching profile data:", error));
@@ -122,9 +123,6 @@ const Profile: React.FC = () => {
       />
       <div className="profile-container">
         <h2>Profile</h2>
-        {imageUrl && (
-          <img src={imageUrl} alt="User" className="profile-image" />
-        )}
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group">
             <label>Username</label>

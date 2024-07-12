@@ -12,10 +12,10 @@ type RegisterFormInputs = {
   confirmPassword: string;
   firstName: string;
   lastName: string;
-  dateOfBirth: string; // Change Date type to string
+  dateOfBirth: string;
   address: string;
   userType: string;
-  userImage: FileList;
+  imageFile: FileList;
 };
 
 const Register: React.FC = () => {
@@ -27,7 +27,6 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
 
   const onSubmit = async (data: RegisterFormInputs) => {
-    // Convert dateOfBirth to a Date object
     const dateOfBirth = new Date(data.dateOfBirth);
 
     const formData = new FormData();
@@ -40,7 +39,7 @@ const Register: React.FC = () => {
     formData.append("dateOfBirth", dateOfBirth.toISOString());
     formData.append("address", data.address);
     formData.append("userType", data.userType);
-    formData.append("userImage", data.userImage[0]);
+    formData.append("ImageFile", data.imageFile[0]);
 
     try {
       const response = await axios.post(
@@ -52,9 +51,10 @@ const Register: React.FC = () => {
           },
         }
       );
-      const token = response.data.token;
-      localStorage.setItem("jwtToken", token); // Store the token in local storage
-      navigate("/dashboard"); // Navigate to Dashboard page
+      const { token, imagePath } = response.data;
+      localStorage.setItem("jwtToken", token);
+      localStorage.setItem("imagePath", imagePath);
+      navigate("/dashboard");
     } catch (error) {
       console.error(error);
     }
@@ -62,7 +62,11 @@ const Register: React.FC = () => {
 
   return (
     <div className="register-container">
-      <form onSubmit={handleSubmit(onSubmit)} className="register-form">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="register-form"
+        encType="multipart/form-data"
+      >
         <h2 className="form-title">Register</h2>
         <div className="form-group">
           <label>Username</label>
@@ -141,8 +145,8 @@ const Register: React.FC = () => {
         </div>
         <div className="form-group">
           <label>User Image</label>
-          <input type="file" {...register("userImage", { required: true })} />
-          {errors.userImage && (
+          <input type="file" {...register("imageFile", { required: true })} />
+          {errors.imageFile && (
             <span className="error">This field is required</span>
           )}
         </div>

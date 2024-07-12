@@ -1,9 +1,24 @@
 .all-users-container {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the user list horizontally */
+  background: linear-gradient(
+    135deg,
+    #6f00ff,
+    #00b4ff
+  ); /* Add gradient background */
+  min-height: 100vh; /* Ensure it covers the full viewport height */
 }
 
 .user-list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center; /* Center the cards */
   gap: 20px;
+}
+
+.all-users-container h2 {
+  color: #fff; /* Change the title color to contrast with the background */
+  margin-bottom: 20px;
 }

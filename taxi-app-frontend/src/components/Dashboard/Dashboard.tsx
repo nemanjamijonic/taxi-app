@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import Navbar from "../Navbar/Navbar";
 import DriveItem from "../DriveItem/DriveItem";
 import "./Dashboard.css";
@@ -14,7 +15,7 @@ type Drive = {
   driverUsername: string;
   aproximatedTime: number;
   aproximatedCost: number;
-  driveState: string; // Changed to number since the API returns a number for driveState
+  driveState: string;
 };
 
 const Dashboard: React.FC = () => {
@@ -38,7 +39,8 @@ const Dashboard: React.FC = () => {
         navigate("/login");
         return;
       }
-
+      const decodedToken: any = jwtDecode(token);
+      const userId = decodedToken.nameid;
       const userResponse = await axios.get(
         "http://localhost:8766/api/User/user",
         {
@@ -52,9 +54,7 @@ const Dashboard: React.FC = () => {
       setUsername(userData.username);
       setUserType(userData.userType);
       setEmail(userData.email);
-      setUserImage(
-        `http://localhost:8766/api/User/get-image/${userData.imagePath}`
-      );
+      setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
 
       const driveResponse = await axios.get(
         "http://localhost:8351/api/Drive/current-user-drive",
@@ -101,7 +101,7 @@ const Dashboard: React.FC = () => {
             }
           )
           .then(() => {
-            setRideTimeLeft(30); // Start the ride time countdown
+            setRideTimeLeft(10); // Start the ride time countdown
             fetchUserData(); // Reload the component
           })
           .catch((error) =>
@@ -150,6 +150,50 @@ const Dashboard: React.FC = () => {
   const handleLogout = () => {
     localStorage.removeItem("jwtToken");
     navigate("/login");
+  };
+
+  const handleAcceptDrive = async (driveId: string) => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) return;
+
+      await axios.post(
+        `http://localhost:8351/api/Drive/accept-drive/${driveId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Refresh the drive data
+      fetchUserData();
+    } catch (error) {
+      console.error("Error accepting drive:", error);
+    }
+  };
+
+  const handleDeclineDrive = async (driveId: string) => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) return;
+
+      await axios.post(
+        `http://localhost:8351/api/Drive/decline-drive/${driveId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Refresh the drive data
+      fetchUserData();
+    } catch (error) {
+      console.error("Error declining drive:", error);
+    }
   };
 
   if (loading) {
@@ -202,6 +246,8 @@ const Dashboard: React.FC = () => {
               aproximatedCost={userDrive.aproximatedCost}
               driveState={userDrive.driveState}
               userType={userType}
+              onAcceptDrive={() => handleAcceptDrive(userDrive.id)}
+              onDeclineDrive={() => handleDeclineDrive(userDrive.id)}
             />
           </div>
         ) : (

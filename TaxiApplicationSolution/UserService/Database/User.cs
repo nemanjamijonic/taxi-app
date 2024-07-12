@@ -1,4 +1,5 @@
 ﻿using Common.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UserService.Database
 {
@@ -16,6 +17,6 @@ namespace UserService.Database
         public bool IsDeleted { get; set; }
         public UserState UserState { get; set; }
         public UserType UserType { get; set; }
-        public string ImagePath { get; set; }
+        public string ImageName { get; set; }
     }
 }

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import UserCard from "../UserCard/UserCard";
 import "./Verification.css";
+import { jwtDecode } from "jwt-decode";
 
 interface User {
   id: string;
@@ -26,6 +27,8 @@ const Verification: React.FC = () => {
     if (!token) {
       navigate("/login");
     } else {
+      const decodedToken: any = jwtDecode(token);
+      const userId = decodedToken.nameid;
       // Fetch unverified drivers
       fetch("http://localhost:8766/api/User/unverified-drivers", {
         headers: {
@@ -50,9 +53,7 @@ const Verification: React.FC = () => {
         .then((data) => {
           setUsername(data.username);
           setUserType(data.userType);
-          setUserImage(
-            `http://localhost:8766/api/User/get-image/${data.imagePath}`
-          );
+          setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
         })
         .catch((error) => console.error("Error fetching user data:", error));
     }
@@ -136,6 +137,7 @@ const Verification: React.FC = () => {
         onLogout={handleLogout}
       />
       <div className="verification-content">
+        <p>{userType}</p>
         <h1>Unverified Drivers</h1>
         {unverifiedUsers.length === 0 ? (
           <h2>No unverified users found.</h2>

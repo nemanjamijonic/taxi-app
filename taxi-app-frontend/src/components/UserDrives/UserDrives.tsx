@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DriveItem from "../DriveItem/DriveItem";
 import Navbar from "../Navbar/Navbar";
+import { jwtDecode } from "jwt-decode";
 import "./UserDrives.css";
 import { useNavigate } from "react-router-dom";
 
@@ -29,7 +30,12 @@ const UserDrives: React.FC = () => {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
         navigate("/login");
+        return;
       }
+
+      // Decode the token to get the userId
+      const decodedToken: any = jwtDecode(token);
+      const userId = decodedToken.nameid;
 
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/user-drives`,
@@ -54,13 +60,11 @@ const UserDrives: React.FC = () => {
       const userData = userResponse.data;
       setUsername(userData.username);
       setUserType(userData.userType);
-      setUserImage(
-        `http://localhost:8766/api/User/get-image/${userData.imagePath}`
-      );
+      setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
     };
 
     fetchDrives();
-  }, []);
+  }, [navigate]);
 
   const handleAcceptDrive = (driveId: string) => {
     // Implementirajte logiku za prihvatanje vožnje

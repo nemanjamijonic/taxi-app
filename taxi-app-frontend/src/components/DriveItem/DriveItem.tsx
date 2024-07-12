@@ -70,9 +70,7 @@ const DriveItem: React.FC<DriveItemProps> = ({
           <button onClick={onDeclineDrive}>Decline Drive</button>
         </>
       )}
-      {userType === "2" && (
-        <button onClick={onCreateOffer}>Create Offer</button>
-      )}
+      {userType == "2" && <button onClick={onCreateOffer}>Create Offer</button>}
     </div>
   );
 };

@@ -33,6 +33,10 @@
     <None Include="StartupServices.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="wwwroot\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

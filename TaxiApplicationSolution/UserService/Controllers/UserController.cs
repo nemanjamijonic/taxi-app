@@ -21,85 +21,94 @@ namespace UserService.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserDbContext _userDbContext;
-        private readonly ILogger<UserController> _logger;
-        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public UserController(UserDbContext dbContext, ILogger<UserController> logger, IWebHostEnvironment webHostEnvironment)
+        private readonly UserDbContext _userDbContext;
+        private readonly string _imagesFolderPath = @"C:\github\TaxiApp\TaxiApplicationSolution\Images";
+
+
+        public UserController(UserDbContext dbContext)
         {
             _userDbContext = dbContext;
-            _logger = logger;
-            _webHostEnvironment = webHostEnvironment;
         }
 
-        [HttpGet("get-image-url")]
-        public IActionResult GetImageUrl()
+        [NonAction]
+        public async Task<string> SaveImage(IFormFile imageFile, string userId, string currentImageName)
         {
-            //  path C:\github\TaxiApp\TaxiApplicationSolution\UserService\images\
-            // Retrieve the JWT token from the request headers
-            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            string extension = Path.GetExtension(imageFile.FileName);
+            string imageName = $"{userId}{extension}";
+            var imagePath = Path.Combine(_imagesFolderPath, imageName);
 
-            // Decode the JWT token
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
-
-            // Retrieve all claims from the decoded token
-            var claims = decodedToken.Claims.ToList();
-
-            // Find the 'nameid' claim and get its value
-            var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
-
-            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            // Proveri i obriši sve fajlove sa istim userId ali različitim ekstenzijama
+            var existingFiles = Directory.GetFiles(_imagesFolderPath, $"{userId}.*");
+            foreach (var file in existingFiles)
             {
-                return Unauthorized(new { message = "Invalid token." });
+                if (Path.GetFileName(file) != imageName)
+                {
+                    try
+                    {
+                        System.IO.File.Delete(file);
+                        Console.WriteLine($"Existing image {file} deleted successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error deleting image {file}: {ex.Message}");
+                    }
+                }
             }
 
-            // Now you have the user ID (`userId`) extracted from the JWT token
-            // Use it as needed in your application logic
-            var user = _userDbContext.Users.FirstOrDefault(u => u.Id == userId);
-            if (user == null)
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
             {
-                return NotFound(new { message = "User not found." });
+                await imageFile.CopyToAsync(fileStream);
             }
-
-            // Assuming ImagePath is the property where you store the relative path of the user's image
-            var imageUrl = user.ImagePath;
-            return Ok(new { imageUrl });
+            return imageName;
         }
 
 
-        /*[HttpGet("get-image-url")]
-        public IActionResult GetImageUrl()
+        [HttpGet("get-image/{imageName}")]
+        public IActionResult GetImage(string imageName)
         {
-            // Retrieve the JWT token from the request headers
-            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var imageDirectory = @"C:\github\TaxiApp\TaxiApplicationSolution\Images";
+            var imageFile = Directory.EnumerateFiles(imageDirectory, imageName + ".*")
+                                      .FirstOrDefault();
 
-            // Decode the JWT token
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+            if (imageFile == null)
+            {
+                return NotFound();
+            }
 
-            // Retrieve all claims from the decoded token
-            var claims = decodedToken.Claims.Select(c => new { c.Type, c.Value }).ToList();
+            string mimeType;
+            var extension = Path.GetExtension(imageFile).ToLowerInvariant();
+            switch (extension)
+            {
+                case ".jpeg":
+                case ".jpg":
+                    mimeType = "image/jpeg";
+                    break;
+                case ".png":
+                    mimeType = "image/png";
+                    break;
+                default:
+                    mimeType = "application/octet-stream";
+                    break;
+            }
 
-            return Ok(new { claims });
-        }*/
+            var image = System.IO.File.OpenRead(imageFile);
+            return File(image, mimeType);
+        }
 
 
 
-        // Metoda za dobijanje svih korisnika koji nisu obrisani
+
+
         [HttpGet("users")]
         public async Task<IActionResult> GetAllActiveUsers()
         {
             var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-            // Decode the JWT token
             var tokenHandler = new JwtSecurityTokenHandler();
             var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
 
-            // Retrieve all claims from the decoded token
             var claims = decodedToken.Claims.ToList();
-
-            // Find the 'nameid' claim and get its value
             var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
 
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
@@ -113,8 +122,6 @@ namespace UserService.Controllers
 
             return Ok(users);
         }
-
-
 
         [HttpGet("user")]
         public async Task<IActionResult> GetUserProfile()
@@ -150,9 +157,55 @@ namespace UserService.Controllers
                 DateOfBirth = user.DateOfBirth.ToString("yyyy-MM-dd"),
                 user.Address,
                 user.UserType,
-                user.ImagePath
             });
         }
+
+
+
+        [HttpPost("update-profile")]
+        public async Task<IActionResult> UpdateUserProfile([FromForm] EditProfileDto editProfileDto)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+            var userIdClaim = decodedToken.Claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var user = await _userDbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            if (editProfileDto.Password != editProfileDto.ConfirmPassword)
+            {
+                return BadRequest(new { message = "Passwords do not match" });
+            }
+
+            var hashedPassword = HashHelper.HashPassword(editProfileDto.Password);
+
+            user.Username = editProfileDto.Username;
+            user.FirstName = editProfileDto.FirstName;
+            user.LastName = editProfileDto.LastName;
+            user.PasswordHash = hashedPassword;
+            user.DateOfBirth = DateTime.Parse(editProfileDto.DateOfBirth);
+            user.Address = editProfileDto.Address;
+
+            if (editProfileDto.UserImage != null)
+            {
+                var image = await SaveImage(editProfileDto.UserImage, user.Id.ToString(), user.ImageName);
+                user.ImageName = image;
+            }
+
+            await _userDbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Profile updated successfully" });
+        }
+
 
 
 
@@ -181,11 +234,11 @@ namespace UserService.Controllers
                 return NotFound(new { message = "User not found." });
             }
 
-            if (user.UserType != UserType.Admin) 
+            if (user.UserType != UserType.Admin)
             {
                 Unauthorized(new { message = "Invalid role." });
             }
-            else 
+            else
             {
                 var users = await _userDbContext.Users
                 .Where(u => !u.IsDeleted && u.UserState == UserState.Created && u.UserType == UserType.Driver)
@@ -200,65 +253,9 @@ namespace UserService.Controllers
             }
 
             return Unauthorized(new { message = "Invalid role." });
-           
+
         }
 
-
-
-        [HttpPost("update-profile")]
-        public async Task<IActionResult> UpdateUserProfile([FromForm] EditProfileDto editProfileDto)
-        {
-            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
-            var userIdClaim = decodedToken.Claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
-
-            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized(new { message = "Invalid token." });
-            }
-
-            var user = await _userDbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null)
-            {
-                return NotFound(new { message = "User not found." });
-            }
-
-
-            if (editProfileDto.Password != editProfileDto.ConfirmPassword)
-            {
-                return BadRequest(new { message = "Passwords do not match" });
-            }
-
-            var hashedPassword = HashHelper.HashPassword(editProfileDto.Password);
-
-            user.Username = editProfileDto.Username;
-            user.FirstName = editProfileDto.FirstName;
-            user.LastName = editProfileDto.LastName;
-            user.PasswordHash = hashedPassword;
-            user.DateOfBirth = DateTime.Parse(editProfileDto.DateOfBirth);
-            user.Address = editProfileDto.Address;
-
-            if (editProfileDto.UserImage != null)
-            {
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + editProfileDto.UserImage.FileName;
-                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                Directory.CreateDirectory(uploadsFolder);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await editProfileDto.UserImage.CopyToAsync(fileStream);
-                }
-
-                user.ImagePath = "/images/" + uniqueFileName;
-            }
-
-            await _userDbContext.SaveChangesAsync();
-
-            return Ok(new { message = "Profile updated successfully" });
-        }
 
         // Metoda za validaciju vozača
         [HttpPost("validate/{userId}")]

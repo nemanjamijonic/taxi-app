@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Navbar from "../Navbar/Navbar";
+import { jwtDecode } from "jwt-decode";
 import DriveItem from "../DriveItem/DriveItem";
 import "./MyRides.css"; // Add any necessary styles for the list
 
@@ -33,6 +34,9 @@ const MyRides: React.FC = () => {
       return;
     }
 
+    const decodedToken: any = jwtDecode(token);
+    const userId = decodedToken.nameid;
+
     try {
       const userResponse = await axios.get(
         "http://localhost:8766/api/User/user",
@@ -46,9 +50,7 @@ const MyRides: React.FC = () => {
       const userData = userResponse.data;
       setUsername(userData.username);
       setUserType(userData.userType);
-      setUserImage(
-        `http://localhost:8766/api/User/get-image/${userData.imagePath}`
-      );
+      setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
     } catch (error) {
       console.error("Error fetching user data:", error);
       setError("Failed to fetch user data. Please try again later.");

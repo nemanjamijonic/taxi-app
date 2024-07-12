@@ -9,10 +9,11 @@ using System.Text;
 using UserService.Database;
 using UserService.Dto;
 using System.IO;
-using System.Threading.Tasks;   
+using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Common.Interfaces;
 using Common.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace UserService.Controllers
 {
@@ -22,15 +23,34 @@ namespace UserService.Controllers
     {
         private readonly UserDbContext _userDbContext;
         private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public AuthController(UserDbContext userDbContext, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+        private readonly string _imagesFolderPath = @"C:\github\TaxiApp\TaxiApplicationSolution\Images";
+
+        public AuthController(UserDbContext userDbContext, IConfiguration configuration)
         {
             _userDbContext = userDbContext;
             _configuration = configuration;
-            _webHostEnvironment = webHostEnvironment;
         }
 
+        [NonAction]
+        public async Task<string> SaveImage(IFormFile imageFile, string userId)
+        {
+            string extension = Path.GetExtension(imageFile.FileName);
+            string imageName = $"{userId}{extension}";
+            var imagePath = Path.Combine(_imagesFolderPath, imageName);
+
+            // Ako slika već postoji, obriši je
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+            return imageName;
+        }
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDto loginDto)
@@ -60,27 +80,6 @@ namespace UserService.Controllers
 
             var hashedPassword = HashHelper.HashPassword(registerDto.Password);
 
-            // Save the image to the server
-            var imagePath = "";
-            if (registerDto.UserImage != null)
-            {
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + registerDto.UserImage.FileName;
-                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-
-                // Ensure the directory exists
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await registerDto.UserImage.CopyToAsync(fileStream);
-                }
-                imagePath = "/images/" + uniqueFileName;
-            }
-
             var user = new User
             {
                 Username = registerDto.Username,
@@ -93,10 +92,7 @@ namespace UserService.Controllers
                 CreatedAt = DateTime.UtcNow.AddHours(2),
                 DateOfBirth = registerDto.DateOfBirth.Date,
                 Address = registerDto.Address,
-                ImagePath = imagePath
             };
-
-
 
             if (registerDto.UserType.Equals("Driver"))
             {
@@ -107,7 +103,7 @@ namespace UserService.Controllers
                 user.UserType = UserType.User;
             }
 
-            if(user.UserType == UserType.User) 
+            if (user.UserType == UserType.User)
             {
                 user.UserState = UserState.Verified;
             }
@@ -117,33 +113,38 @@ namespace UserService.Controllers
                 user.UserState = UserState.Verified;
             }
 
-            EmailInfo emailInfo = new EmailInfo() {
-                Username = user.Username,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                UserType = user.UserType.ToString()
-            };
-
-
+            user.ImageName = "";
 
             _userDbContext.Users.Add(user);
             _userDbContext.SaveChanges();
 
-            emailInfo.Id = user.Id;
+            // Save image with the user ID as the filename
+            var image = await SaveImage(registerDto.ImageFile, user.Id.ToString());
+            user.ImageName = image;
+
+            _userDbContext.Users.Update(user);
+            _userDbContext.SaveChanges();
+
+            EmailInfo emailInfo = new EmailInfo()
+            {
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                UserType = user.UserType.ToString(),
+                Id = user.Id
+            };
 
             var emailServiceProxy = ServiceProxy.Create<IEmailInterface>(
-                    new Uri("fabric:/TaxiApplication/EmailService")
-                );
+                new Uri("fabric:/TaxiApplication/EmailService")
+            );
 
             var emailSent = await emailServiceProxy.UserRegistrationEmail(emailInfo);
 
             var token = GenerateJwtToken(user);
 
-            return Ok(new { token, message = "Registration successful" });
+            return Ok("Registration successful");
         }
-
-
 
         private string GenerateJwtToken(User user)
         {

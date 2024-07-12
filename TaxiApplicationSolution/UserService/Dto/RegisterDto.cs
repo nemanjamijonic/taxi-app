@@ -13,6 +13,6 @@ namespace UserService.Dto
         public DateTime DateOfBirth { get; set; }
         public string Address { get; set; }
         public string UserType { get; set; }
-        public IFormFile UserImage { get; set; } // Dodato
+        public IFormFile ImageFile { get; set; }
     }
 }

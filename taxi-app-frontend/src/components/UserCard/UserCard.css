@@ -3,10 +3,11 @@
   border-radius: 8px;
   padding: 16px;
   margin: 8px;
-  color: red;
-  width: 450px;
+  color: #333; /* Change text color for better readability */
+  width: 280px; /* Adjust width to fit three cards per row */
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s; /* Add a subtle hover effect */
 }
 
 .user-card p {
@@ -16,14 +17,19 @@
 .user-card button {
   background-color: #007bff;
   color: #fff;
-  margin-top: 20px;
-  width: 90%;
+  margin-top: 10px; /* Reduce margin to fit better */
+  width: 100%; /* Adjust button width */
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s; /* Add transition for hover effect */
 }
 
 .user-card button:hover {
   background-color: #0056b3;
+}
+
+.user-card:hover {
+  transform: translateY(-5px); /* Slight lift effect on hover */
 }

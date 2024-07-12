@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // Correct the import
 import Navbar from "../Navbar/Navbar";
 import UserCard from "../UserCard/UserCard";
 import "./AllUsers.css";
@@ -16,6 +16,7 @@ interface User {
 }
 
 interface DecodedToken {
+  nameid: string;
   unique_name: string;
   role: string;
 }
@@ -30,7 +31,7 @@ const AllUsers: React.FC = () => {
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
-      navigate("/");
+      navigate("/login");
     } else {
       const fetchData = async () => {
         try {
@@ -44,7 +45,12 @@ const AllUsers: React.FC = () => {
 
           const decodedToken = jwtDecode<DecodedToken>(token);
           setUsername(decodedToken.unique_name);
-          setUserType(decodedToken.role);
+          const role = decodedToken.role;
+          if (role === "Admin") {
+            setUserType("0");
+          }
+          const userId = decodedToken.nameid;
+          setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
         } catch (error) {
           console.error("Error fetching users:", error);
         }
@@ -85,7 +91,7 @@ const AllUsers: React.FC = () => {
   };
 
   const handleRejection = async (userId: string) => {
-    return;
+    // Implement rejection logic here
   };
 
   return (

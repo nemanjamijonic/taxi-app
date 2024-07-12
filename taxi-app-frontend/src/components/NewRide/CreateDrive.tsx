@@ -34,6 +34,7 @@ const CreateDrive: React.FC = () => {
 
         // Extract the username from the unique_name claim
         const extractedUsername = decodedToken.unique_name;
+        const userId = decodedToken.nameid;
         setUsername(extractedUsername);
 
         // Fetch additional user data from your backend if needed
@@ -48,9 +49,7 @@ const CreateDrive: React.FC = () => {
 
         const userData = userResponse.data;
         setUserType(userData.userType);
-        setUserImage(
-          `http://localhost:8766/api/User/get-image/${userData.imagePath}`
-        );
+        setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
 
         // Set the userUsername field in the form
         setValue("userUsername", extractedUsername);
@@ -78,7 +77,7 @@ const CreateDrive: React.FC = () => {
       );
 
       if (response.status === 201) {
-        navigate("/previous-rides"); // Navigate to the drives list page
+        navigate("/dashboard"); // Navigate to the drives list page
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {

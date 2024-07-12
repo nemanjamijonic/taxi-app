@@ -3,6 +3,7 @@ import axios from "axios";
 import DriveItem from "../DriveItem/DriveItem";
 import Navbar from "../Navbar/Navbar";
 import "./AllDrives.css"; // Add any necessary styles for the list
+import { jwtDecode } from "jwt-decode";
 
 type Drive = {
   id: string;
@@ -40,11 +41,11 @@ const AllDrives: React.FC = () => {
         },
       });
       const userData = response.data;
+      const decodedToken: any = jwtDecode(token);
+      const userId = decodedToken.nameid;
       setUsername(userData.username);
       setUserType(userData.userType);
-      setUserImage(
-        `http://localhost:8766/api/User/get-image/${userData.imagePath}`
-      );
+      setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
     } catch (error) {
       console.error("Error fetching user data:", error);
       setError("Failed to fetch user data. Please try again later.");

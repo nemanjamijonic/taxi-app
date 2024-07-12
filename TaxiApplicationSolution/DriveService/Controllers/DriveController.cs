@@ -45,7 +45,7 @@ namespace DriveService.Controllers
                 return Unauthorized(new { message = "Invalid token." });
             }
 
-            var drives = await _context.Drives.Where(d => !d.IsDeleted).ToListAsync();
+            var drives = await _context.Drives.Where(d => !d.IsDeleted && d.DriveState != DriveState.DriveCompleted).ToListAsync();
             return Ok(drives);
         }
 
@@ -97,7 +97,7 @@ namespace DriveService.Controllers
             }
 
             // Get all drives for the user
-            var userDrives = await _context.Drives.Where(d => d.UserId == userId && !d.IsDeleted && d.DriveState == DriveState.DriveCompleted).ToListAsync();
+            var userDrives = await _context.Drives.Where(d => d.UserId == userId && !d.IsDeleted && (d.DriveState == DriveState.DriveCompleted || d.DriveState == DriveState.UserDeclinedDrive )).ToListAsync();
 
             return Ok(userDrives);
         }
@@ -257,6 +257,40 @@ namespace DriveService.Controllers
             }
 
             drive.DriveState = DriveState.UserAceptedDrive;
+            await _context.SaveChangesAsync();
+
+            return Ok(drive);
+        }
+
+
+        [HttpPost("decline-drive/{id}")]
+        public async Task<ActionResult<Drive>> UserDeclineDrive(Guid id)
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            // Decode the JWT token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+
+            // Retrieve all claims from the decoded token
+            var claims = decodedToken.Claims.ToList();
+
+            // Find the 'nameid' claim and get its value
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var drive = await _context.Drives.FindAsync(id);
+
+            if (drive == null)
+            {
+                return NotFound();
+            }
+
+            drive.DriveState = DriveState.UserDeclinedDrive;
             await _context.SaveChangesAsync();
 
             return Ok(drive);
