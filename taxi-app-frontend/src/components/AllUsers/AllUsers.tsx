@@ -13,6 +13,7 @@ interface User {
   userType: string;
   firstName: string;
   lastName: string;
+  averageRating: number;
 }
 
 interface DecodedToken {
@@ -79,7 +80,7 @@ const AllUsers: React.FC = () => {
       if (response.ok) {
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
-            user.id === userId ? { ...user, userState: "1" } : user
+            user.id == userId ? { ...user, userState: "1" } : user
           )
         );
       } else {

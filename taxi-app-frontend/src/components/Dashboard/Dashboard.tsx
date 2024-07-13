@@ -5,6 +5,8 @@ import { jwtDecode } from "jwt-decode";
 import Navbar from "../Navbar/Navbar";
 import DriveItem from "../DriveItem/DriveItem";
 import "./Dashboard.css";
+import ReactStars from "react-rating-stars-component";
+import { CButton } from "@coreui/react";
 
 type Drive = {
   id: string;
@@ -30,6 +32,8 @@ const Dashboard: React.FC = () => {
   const [arrivalNotified, setArrivalNotified] = useState(false);
   const [completionNotified, setCompletionNotified] = useState(false);
   const [completionMessage, setCompletionMessage] = useState(false);
+  const [currentRating, setCurrentRating] = useState<number | null>(null);
+  const [showRatingForm, setShowRatingForm] = useState(false);
   const navigate = useNavigate();
 
   const fetchUserData = useCallback(async () => {
@@ -41,7 +45,7 @@ const Dashboard: React.FC = () => {
       }
       const decodedToken: any = jwtDecode(token);
       const userId = decodedToken.nameid;
-      const userRole = decodedToken.role; // Get the user role from the token
+      const userRole = decodedToken.role;
       console.log(userRole);
       const userResponse = await axios.get(
         "http://localhost:8766/api/User/user",
@@ -58,7 +62,6 @@ const Dashboard: React.FC = () => {
       setEmail(userData.email);
       setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
 
-      // Determine the appropriate endpoint based on the user role
       const endpoint =
         userRole == "User"
           ? "http://localhost:8351/api/Drive/current-user-drive"
@@ -106,8 +109,8 @@ const Dashboard: React.FC = () => {
             }
           )
           .then(() => {
-            setRideTimeLeft(10); // Start the ride time countdown
-            fetchUserData(); // Reload the component
+            setRideTimeLeft(10);
+            fetchUserData();
           })
           .catch((error) =>
             console.error("Error notifying drive arrival:", error)
@@ -138,11 +141,12 @@ const Dashboard: React.FC = () => {
             }
           )
           .then(() => {
-            setCompletionMessage(true); // Show completion message
+            setCompletionMessage(true);
+            setShowRatingForm(true);
             setTimeout(() => {
               setCompletionMessage(false);
-              fetchUserData(); // Reload the component
-            }, 3000); // Display the message for 3 seconds
+              fetchUserData();
+            }, 3000);
           })
           .catch((error) =>
             console.error("Error notifying drive completion:", error)
@@ -172,7 +176,6 @@ const Dashboard: React.FC = () => {
         }
       );
 
-      // Refresh the drive data
       fetchUserData();
     } catch (error) {
       console.error("Error accepting drive:", error);
@@ -194,15 +197,42 @@ const Dashboard: React.FC = () => {
         }
       );
 
-      // Refresh the drive data
       fetchUserData();
     } catch (error) {
       console.error("Error declining drive:", error);
     }
   };
 
+  const handleRatingSubmit = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token || !userDrive || currentRating === null) return;
+
+      const ratingData = {
+        DriveId: userDrive.id,
+        Rating: currentRating,
+      };
+
+      await axios.post(
+        `http://localhost:8351/api/DriverRating/createDriverRating`,
+        ratingData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setShowRatingForm(false);
+      alert("Rating submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting rating:", error);
+      alert("Error submitting rating.");
+    }
+  };
+
   if (loading) {
-    return <div>Loading...</div>; // Display a loading message while fetching data
+    return <div>Loading...</div>;
   }
 
   return (
@@ -267,6 +297,31 @@ const Dashboard: React.FC = () => {
         {completionMessage && (
           <div className="completion-message">
             <p>Ride successfully completed!</p>
+          </div>
+        )}
+
+        {showRatingForm && userDrive && userType == "1" && (
+          <div className="rating-form">
+            <p>Rate the driver: {userDrive.driverUsername}</p>
+            <div className="d-flex align-items-center">
+              <ReactStars
+                count={5}
+                onChange={(value: number) => setCurrentRating(value)}
+                size={24}
+                activeColor="#ffd700"
+                value={currentRating || 0}
+              />
+              <CButton
+                className="ms-3"
+                color="primary"
+                onClick={() => setCurrentRating(null)}
+              >
+                Reset
+              </CButton>
+            </div>
+            <CButton color="primary" onClick={handleRatingSubmit}>
+              Submit Rating
+            </CButton>
           </div>
         )}
       </div>

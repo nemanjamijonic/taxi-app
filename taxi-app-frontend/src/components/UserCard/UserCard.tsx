@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./UserCard.css";
 
 interface UserCardProps {
@@ -10,12 +11,37 @@ interface UserCardProps {
     userType: string;
     firstName: string;
     lastName: string;
+    averageRating?: number; // Optional prop
   };
   onVerify: (userId: string) => void;
   onRejection: (userId: string) => void;
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
+  const [averageRating, setAverageRating] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user.userType == "2") {
+      const fetchAverageRating = async () => {
+        try {
+          const response = await axios.get(
+            `http://localhost:8351/api/DriverRating/getAverageRating/${user.id}`
+          );
+          setAverageRating(response.data);
+        } catch (error) {
+          console.error("Error fetching average rating:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchAverageRating();
+    } else {
+      setLoading(false);
+    }
+  }, [user.id, user.userType]);
+
   const getUserState = (state: string) => {
     if (state == "0" && user.userType == "2") return "Unverified";
     if (state == "0" && user.userType == "1") return "Verified";
@@ -26,6 +52,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
 
   return (
     <div className="user-card">
+      <h2>{user.id}</h2>
       <p>
         <strong>Username:</strong> {user.username}
       </p>
@@ -47,6 +74,17 @@ const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
       <p>
         <strong>Status:</strong> {getUserState(user.userState)}
       </p>
+      {user.userType == "2" && averageRating != 0 && (
+        <p>
+          <strong>Average Rating: {averageRating}</strong>
+        </p>
+      )}
+      {user.userType == "2" && averageRating === 0 && (
+        <p>
+          <strong>Driver Has No Ratings Yet</strong>
+        </p>
+      )}
+
       {user.userType == "2" && user.userState == "0" && (
         <>
           <button onClick={() => onVerify(user.id)}>Verify Driver</button>

@@ -13,6 +13,7 @@ interface User {
   userType: string;
   firstName: string;
   lastName: string;
+  averageRating: number;
 }
 
 const Verification: React.FC = () => {
