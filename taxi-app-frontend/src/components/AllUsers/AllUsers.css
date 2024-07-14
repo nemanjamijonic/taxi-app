@@ -1,19 +1,78 @@
 .all-users-container {
-  padding: 20px;
-  position: center;
   display: flex;
-  flex-direction: column;
-  align-items: center; /* Center the user list horizontally */
+  flex-wrap: wrap; /* Allow wrapping of items */
+  justify-content: space-between; /* Space between items */
+  gap: 20px; /* Gap between items */
 }
 
 .user-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center; /* Center the cards */
-  gap: 20px;
+  max-width: 1200px; /* Maximum width for the list */
+  margin: 0 auto; /* Center the container */
+  padding: 20px; /* Padding around the container */
+  box-sizing: border-box;
 }
 
-.all-users-container h2 {
-  color: #fff; /* Change the title color to contrast with the background */
-  margin-bottom: 20px;
+.user-list .user-card {
+  flex: 0 1 calc(33.333% - 20px); /* Each item takes up 1/3 of the row, minus gap */
+  box-sizing: border-box;
+}
+
+.user-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px;
+  color: #333; /* Promenite boju teksta radi bolje čitljivosti */
+  flex: 0 1 calc(33.333% - 20px); /* Svaka kartica zauzima 1/3 reda, minus razmak */
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s; /* Dodajte suptilan efekat pri prelasku miša */
+}
+
+.user-card:hover {
+  transform: scale(1.05); /* Lagani efekat podizanja pri prelasku miša */
+}
+
+.user-card p {
+  text-align: left;
+  margin: 5px 0;
+  font-size: 1rem; /* Standardna veličina fonta */
+}
+
+.user-card hr {
+  border: 1px solid #2575fc;
+}
+
+.user-card h3 {
+  color: #6a11cb;
+}
+
+.user-card button {
+  background-color: #007bff;
+  color: #fff;
+  margin-top: 10px; /* Smanjite marginu da se bolje uklopi */
+  width: 100%; /* Podesite širinu dugmeta */
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s; /* Dodajte tranziciju za efekat prelaska miša */
+}
+
+.user-card button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  /* Za tablete i manje ekrane */
+  .user-card {
+    flex: 0 1 calc(50% - 20px); /* Svaka kartica zauzima 1/2 reda */
+  }
+}
+
+@media (max-width: 480px) {
+  /* Za mobilne telefone */
+  .user-card {
+    flex: 0 1 100%; /* Svaka kartica zauzima punu širinu reda */
+  }
 }

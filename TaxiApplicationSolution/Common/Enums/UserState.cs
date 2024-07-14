@@ -8,6 +8,7 @@ namespace Common.Enums
     {
         Created,
         Verified,
-        Rejected
+        Rejected,
+        Blocked
     }
 }

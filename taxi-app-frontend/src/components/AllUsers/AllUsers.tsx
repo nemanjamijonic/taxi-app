@@ -40,22 +40,27 @@ const AllUsers: React.FC = () => {
       }
       const fetchData = async () => {
         try {
-          const response = await fetch("http://localhost:8766/api/User/users", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const response = await fetch(
+            `${process.env.REACT_APP_BACKEND_URL_USER_API}/users`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
           const data = await response.json();
           setUsers(data);
 
           const decodedToken = jwtDecode<DecodedToken>(token);
           setUsername(decodedToken.unique_name);
           const role = decodedToken.role;
-          if (role === "Admin") {
+          if (role == "Admin") {
             setUserType("0");
           }
           const userId = decodedToken.nameid;
-          setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
+          setUserImage(
+            `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${userId}`
+          );
         } catch (error) {
           console.error("Error fetching users:", error);
         }
@@ -73,33 +78,7 @@ const AllUsers: React.FC = () => {
     const token = localStorage.getItem("jwtToken");
     try {
       const response = await fetch(
-        `http://localhost:8766/api/User/validate/${userId}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.ok) {
-        setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user.id == userId ? { ...user, userState: "1" } : user
-          )
-        );
-      } else {
-        console.error("Error verifying user:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error verifying user:", error);
-    }
-  };
-
-  const handleRejection = async (userId: string) => {
-    const token = localStorage.getItem("jwtToken");
-    try {
-      const response = await fetch(
-        `http://localhost:8766/api/User/reject/${userId}`,
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/validate/${userId}`,
         {
           method: "POST",
           headers: {
@@ -114,10 +93,62 @@ const AllUsers: React.FC = () => {
           )
         );
       } else {
+        console.error("Error verifying user:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error verifying user:", error);
+    }
+  };
+
+  const handleRejection = async (userId: string) => {
+    const token = localStorage.getItem("jwtToken");
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/reject/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === userId ? { ...user, userState: "2" } : user
+          )
+        );
+      } else {
         console.error("Error rejecting user:", response.statusText);
       }
     } catch (error) {
       console.error("Error rejecting user:", error);
+    }
+  };
+
+  const handleBlock = async (userId: string) => {
+    const token = localStorage.getItem("jwtToken");
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/block/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === userId ? { ...user, userState: "3" } : user
+          )
+        );
+      } else {
+        console.error("Error blocking user:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error blocking user:", error);
     }
   };
 
@@ -129,15 +160,16 @@ const AllUsers: React.FC = () => {
         userImage={userImage}
         onLogout={handleLogout}
       />
-      <div className="all-users-container">
+      <div className="user-list">
         <h2>All Users</h2>
-        <div className="user-list">
+        <div className="user-list-container">
           {users.map((user) => (
             <UserCard
               key={user.id}
               user={user}
               onVerify={handleVerify}
               onRejection={handleRejection}
+              onBlocking={handleBlock}
             />
           ))}
         </div>

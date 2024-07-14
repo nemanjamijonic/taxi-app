@@ -63,7 +63,9 @@ namespace UserService.Controllers
             {
                 return Unauthorized(new { message = "Invalid email or password" });
             }
-
+            if (user.UserType == UserType.Driver && user.UserState == UserState.Created) {
+                return Unauthorized(new { message = "You have to wait Admins Verify." });
+            }
             var token = GenerateJwtToken(user);
             return Ok(new { token });
         }
@@ -154,8 +156,14 @@ namespace UserService.Controllers
         {
             var properties = new AuthenticationProperties { RedirectUri = Url.Action(nameof(GoogleResponse)) };
             properties.Items["LoginProvider"] = GoogleDefaults.AuthenticationScheme;
+
+            HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:3000");
+            HttpContext.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
+
+
 
         [HttpGet("google-response")]
         public async Task<IActionResult> GoogleResponse()
@@ -191,14 +199,18 @@ namespace UserService.Controllers
                 };
 
                 _userDbContext.Users.Add(user);
-                _userDbContext.SaveChanges();
+                await _userDbContext.SaveChangesAsync();
             }
 
             var token = GenerateJwtToken(user);
 
-            HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:3000"); // Dodajte ovo
+            HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:3000");
+            HttpContext.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+
             return Ok(new { token });
         }
+
+
 
 
 

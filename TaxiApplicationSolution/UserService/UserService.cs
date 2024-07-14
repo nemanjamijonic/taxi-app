@@ -42,15 +42,14 @@ namespace UserService
 
                         // Add CORS policy
                         builder.Services.AddCors(options =>
-{
+                        {
                             options.AddPolicy("AllowSpecificOrigin",
-                                builder => builder
+                                policy => policy
                                     .WithOrigins("http://localhost:3000")
                                     .AllowAnyHeader()
                                     .AllowAnyMethod()
                                     .AllowCredentials());
                         });
-
 
                         // JWT Authentication
                         var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
@@ -97,11 +96,11 @@ namespace UserService
                             app.UseSwaggerUI();
                         }
 
+                        // Ensure the correct order of middleware
+                        app.UseCors("AllowSpecificOrigin");
+
                         app.UseAuthentication();
                         app.UseAuthorization();
-
-                        // Use CORS
-                        app.UseCors("AllowSpecificOrigin");
 
                         app.MapControllers();
 

@@ -23,6 +23,7 @@ type Drive = {
 const Dashboard: React.FC = () => {
   const [username, setUsername] = useState("");
   const [userType, setUserType] = useState("");
+  const [userState, setUserState] = useState("");
   const [email, setEmail] = useState("");
   const [userImage, setUserImage] = useState("");
   const [userDrive, setUserDrive] = useState<Drive | null>(null);
@@ -48,24 +49,26 @@ const Dashboard: React.FC = () => {
       const userRole = decodedToken.role;
       console.log(userRole);
       const userResponse = await axios.get(
-        "http://localhost:8766/api/User/user",
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/user`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
+      setUserState(userResponse.data.userState);
       const userData = userResponse.data;
       setUsername(userData.username);
       setUserType(userData.userType);
       setEmail(userData.email);
-      setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
+      setUserImage(
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${userId}`
+      );
 
       const endpoint =
         userRole == "User"
-          ? "http://localhost:8351/api/Drive/current-user-drive"
-          : "http://localhost:8351/api/Drive/current-driver-drive";
+          ? `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/current-user-drive`
+          : `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/current-driver-drive`;
 
       const driveResponse = await axios.get(endpoint, {
         headers: {
@@ -100,7 +103,7 @@ const Dashboard: React.FC = () => {
       if (token) {
         axios
           .post(
-            `http://localhost:8351/api/Drive/drive-arrived/${userDrive.id}`,
+            `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/drive-arrived/${userDrive.id}`,
             {},
             {
               headers: {
@@ -132,7 +135,7 @@ const Dashboard: React.FC = () => {
       if (token) {
         axios
           .post(
-            `http://localhost:8351/api/Drive/drive-completed/${userDrive.id}`,
+            `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/drive-completed/${userDrive.id}`,
             {},
             {
               headers: {
@@ -167,7 +170,7 @@ const Dashboard: React.FC = () => {
       if (!token) return;
 
       await axios.post(
-        `http://localhost:8351/api/Drive/accept-drive/${driveId}`,
+        `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/accept-drive/${driveId}`,
         {},
         {
           headers: {
@@ -188,7 +191,7 @@ const Dashboard: React.FC = () => {
       if (!token) return;
 
       await axios.post(
-        `http://localhost:8351/api/Drive/decline-drive/${driveId}`,
+        `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/decline-drive/${driveId}`,
         {},
         {
           headers: {
@@ -214,7 +217,7 @@ const Dashboard: React.FC = () => {
       };
 
       await axios.post(
-        `http://localhost:8351/api/DriverRating/createDriverRating`,
+        `${process.env.REACT_APP_BACKEND_URL_DRIVER_RATING_API}/createDriverRating`,
         ratingData,
         {
           headers: {
@@ -286,6 +289,7 @@ const Dashboard: React.FC = () => {
               aproximatedCost={userDrive.aproximatedCost}
               driveState={userDrive.driveState}
               userType={userType}
+              userState={userState}
               onAcceptDrive={() => handleAcceptDrive(userDrive.id)}
               onDeclineDrive={() => handleDeclineDrive(userDrive.id)}
             />
@@ -319,7 +323,11 @@ const Dashboard: React.FC = () => {
                 Reset
               </CButton>
             </div>
-            <CButton color="primary" onClick={handleRatingSubmit}>
+            <CButton
+              color="primary"
+              className="rating-form-submit"
+              onClick={handleRatingSubmit}
+            >
               Submit Rating
             </CButton>
           </div>

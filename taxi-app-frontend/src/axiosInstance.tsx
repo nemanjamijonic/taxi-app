@@ -1,13 +1,11 @@
 import axios from "axios";
 
-const axiosInstance = axios.create();
-
-axiosInstance.interceptors.request.use((config) => {
-  if (!config.headers) {
-    config.headers = {};
-  }
-  config.headers["referrerPolicy"] = "strict-origin-when-cross-origin";
-  return config;
+const axiosInstance = axios.create({
+  baseURL: "http://localhost:8766",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
 });
 
 export default axiosInstance;

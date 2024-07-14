@@ -44,7 +44,7 @@ const Profile: React.FC = () => {
     } else {
       const decodedToken = jwtDecode<DecodedToken>(token);
 
-      fetch(`http://localhost:8766/api/User/user`, {
+      fetch(`${process.env.REACT_APP_BACKEND_URL_USER_API}/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -59,13 +59,13 @@ const Profile: React.FC = () => {
           setValue("address", data.address);
           setValue("userType", data.userType);
           setImageUrl(
-            `http://localhost:8766/api/User/get-image/${decodedToken.nameid}`
+            `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${decodedToken.nameid}`
           );
 
           setUsername(data.username);
           setUserType(data.userType);
           setUserImage(
-            `http://localhost:8766/api/User/get-image/${decodedToken.nameid}`
+            `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${decodedToken.nameid}`
           );
         })
         .catch((error) => console.error("Error fetching profile data:", error));
@@ -92,7 +92,7 @@ const Profile: React.FC = () => {
       formData.append("userImage", data.userImage[0]);
     }
 
-    fetch("http://localhost:8766/api/User/update-profile", {
+    fetch(`${process.env.REACT_APP_BACKEND_URL_USER_API}/update-profile`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

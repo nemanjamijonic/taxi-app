@@ -31,17 +31,20 @@ const Verification: React.FC = () => {
       const decodedToken: any = jwtDecode(token);
       const userId = decodedToken.nameid;
       const role = decodedToken.role;
-      {
-        if (role != "Admin") {
-          navigate("/dashboard");
-        }
+
+      if (role != "Admin") {
+        navigate("/dashboard");
       }
+
       // Fetch unverified drivers
-      fetch("http://localhost:8766/api/User/unverified-drivers", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      fetch(
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/unverified-drivers`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
         .then((response) => response.json())
         .then((data: User[]) => {
           setUnverifiedUsers(data);
@@ -51,7 +54,7 @@ const Verification: React.FC = () => {
         );
 
       // Fetch logged-in user data
-      fetch("http://localhost:8766/api/User/user", {
+      fetch(`${process.env.REACT_APP_BACKEND_URL_USER_API}/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -60,7 +63,9 @@ const Verification: React.FC = () => {
         .then((data) => {
           setUsername(data.username);
           setUserType(data.userType);
-          setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
+          setUserImage(
+            `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${userId}`
+          );
         })
         .catch((error) => console.error("Error fetching user data:", error));
     }
@@ -71,11 +76,13 @@ const Verification: React.FC = () => {
     navigate("/login");
   };
 
+  const handleBlocking = () => {};
+
   const handleVerify = async (userId: string) => {
     const token = localStorage.getItem("jwtToken");
     try {
       const response = await fetch(
-        `http://localhost:8766/api/User/validate/${userId}`,
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/validate/${userId}`,
         {
           method: "POST",
           headers: {
@@ -107,7 +114,7 @@ const Verification: React.FC = () => {
     const token = localStorage.getItem("jwtToken");
     try {
       const response = await fetch(
-        `http://localhost:8766/api/User/reject/${userId}`,
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/reject/${userId}`,
         {
           method: "POST",
           headers: {
@@ -155,6 +162,7 @@ const Verification: React.FC = () => {
                 user={user}
                 onVerify={handleVerify}
                 onRejection={handleRejection}
+                onBlocking={handleBlocking}
               />
             ))}
           </div>

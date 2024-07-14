@@ -62,7 +62,9 @@ const UserDrives: React.FC = () => {
       const userData = userResponse.data;
       setUsername(userData.username);
       setUserType(userData.userType);
-      setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
+      setUserImage(
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${userId}`
+      );
     };
 
     fetchDrives();
@@ -103,6 +105,7 @@ const UserDrives: React.FC = () => {
                 aproximatedTime={drive.aproximatedTime}
                 aproximatedCost={drive.aproximatedCost}
                 driveState={drive.driveState}
+                userState={drive.driveState}
                 userType={userType} // Prosleđivanje userType-a
                 onAcceptDrive={() => handleAcceptDrive(drive.id)} // Prosleđivanje funkcije za prihvatanje
               />

@@ -28,3 +28,15 @@ h1 {
 p {
   font-size: 18px;
 }
+
+.rating-form {
+  color: red;
+  width: 350px;
+  max-width: 350px;
+  border: 1px solid;
+  border-radius: 20px;
+}
+
+.rating-form-submit {
+  width: 80%;
+}

@@ -51,7 +51,9 @@ const CreateDrive: React.FC = () => {
 
         const userData = userResponse.data;
         setUserType(userData.userType);
-        setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
+        setUserImage(
+          `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${userId}`
+        );
 
         // Set the userUsername field in the form
         setValue("userUsername", extractedUsername);

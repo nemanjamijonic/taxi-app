@@ -15,18 +15,24 @@ interface UserCardProps {
   };
   onVerify: (userId: string) => void;
   onRejection: (userId: string) => void;
+  onBlocking: (userId: string) => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
+const UserCard: React.FC<UserCardProps> = ({
+  user,
+  onVerify,
+  onRejection,
+  onBlocking,
+}) => {
   const [averageRating, setAverageRating] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user.userType == "2") {
+    if (user.userType === "2") {
       const fetchAverageRating = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:8351/api/DriverRating/getAverageRating/${user.id}`
+            `${process.env.REACT_APP_BACKEND_URL_DRIVER_RATING_API}/getAverageRating/${user.id}`
           );
           setAverageRating(response.data);
         } catch (error) {
@@ -43,59 +49,71 @@ const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
   }, [user.id, user.userType]);
 
   const getUserState = (state: string) => {
-    if (state == "0" && user.userType == "2") return "Unverified";
-    if (state == "0" && user.userType == "1") return "Verified";
-    if (state == "0" && user.userType == "0") return "Verified";
-    if (state == "1") return "Verified";
-    if (state == "2") return "Rejected";
+    if (state == "0") {
+      return "Pending";
+    } else if (state == "1") {
+      return "Active";
+    } else if (state == "2") {
+      return "Rejected";
+    } else if (state == "3") {
+      return "Blocked";
+    } else {
+      return "Unknown";
+    }
+  };
+
+  const getUserType = (type: string) => {
+    if (type == "0") {
+      return "Admin";
+    } else if (type == "1") {
+      return "User";
+    } else if (type == "2") {
+      return "Driver";
+    } else {
+      return "Unknown";
+    }
   };
 
   return (
     <div className="user-card">
-      <h3>{user.id}</h3>
+      <h3>{user.username}</h3>
       <hr />
       <p>
-        <strong>Username:</strong> {user.username}
+        <strong>First Name:</strong> {user.firstName}
+      </p>
+      <p>
+        <strong>Last Name:</strong> {user.lastName}
       </p>
       <p>
         <strong>Email:</strong> {user.email}
       </p>
-      {user.userType == "1" ? (
+      <p>
+        <strong>User Type:</strong> {getUserType(user.userType)}
+      </p>
+      {user.userType == "2" && (
         <p>
-          <strong>Type:</strong> User
-        </p>
-      ) : (
-        <p>
-          <strong>User Type:</strong> Driver
+          <strong>Average Rating:</strong>{" "}
+          {loading
+            ? "Loading..."
+            : averageRating != null
+            ? averageRating.toFixed(2)
+            : "N/A"}
         </p>
       )}
-      <p>
-        <strong>Full Name:</strong> {user.firstName} {user.lastName}
-      </p>
       <p>
         <strong>Status:</strong> {getUserState(user.userState)}
       </p>
-      {user.userType == "2" && averageRating != 0 && (
-        <p>
-          <strong>Average Rating: {averageRating}</strong>
-        </p>
-      )}
-      {user.userType == "2" && averageRating === 0 && (
-        <p>
-          <strong>Driver Has No Ratings Yet</strong>
-        </p>
-      )}
-      {user.userType == "1" && (
-        <p>
-          <strong>User Can't Be Rated</strong>
-        </p>
-      )}
-      {user.userType == "2" && user.userState == "0" && (
-        <>
-          <button onClick={() => onVerify(user.id)}>Verify Driver</button>
-          <button onClick={() => onRejection(user.id)}>Reject Driver</button>
-        </>
-      )}
+      <div className="user-card-actions">
+        {user.userState == "0" && (
+          <>
+            <button onClick={() => onVerify(user.id)}>Verify</button>
+            <button onClick={() => onRejection(user.id)}>Reject</button>
+          </>
+        )}
+        {user.userState == "1" && user.userType == "2" && (
+          <button onClick={() => onBlocking(user.id)}>Block</button>
+        )}
+      </div>
     </div>
   );
 };

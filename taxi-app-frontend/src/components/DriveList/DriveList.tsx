@@ -52,7 +52,7 @@ const DriveList: React.FC = () => {
         setUsername(userData.username);
         setUserType(userData.userType);
         setUserImage(
-          `http://localhost:8766/api/User/get-image/${userData.imagePath}`
+          `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${userData.imagePath}`
         );
 
         if (userData.userType !== 2) {
@@ -178,6 +178,7 @@ const DriveList: React.FC = () => {
               aproximatedCost={drive.aproximatedCost}
               driveState={drive.driveState}
               userType={"2"}
+              userState={username}
               onAcceptDrive={() => handleAcceptDrive(drive.id)}
               onCreateOffer={() => handleCreateOffer(drive.id)}
             />

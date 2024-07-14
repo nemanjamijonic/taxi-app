@@ -11,6 +11,7 @@ type DriveItemProps = {
   aproximatedTime: number;
   aproximatedCost: number;
   driveState: string;
+  userState: string;
   userType: string;
   onAcceptDrive?: () => void;
   onDeclineDrive?: () => void;
@@ -22,12 +23,13 @@ const DriveItem: React.FC<DriveItemProps> = ({
   startingAddress,
   endingAddress,
   createdAt,
-  userUsername,
+  userUsername, 
   driverUsername,
   aproximatedTime,
   aproximatedCost,
   driveState,
   userType,
+  userState,
   onAcceptDrive,
   onDeclineDrive,
   onCreateOffer,
@@ -72,7 +74,7 @@ const DriveItem: React.FC<DriveItemProps> = ({
           <button onClick={onDeclineDrive}>Decline Drive</button>
         </>
       )}
-      {userType == "2" && driveState == "0" && (
+      {userType == "2" && driveState == "0" && userState != "3" && (
         <button onClick={onCreateOffer}>Create Offer</button>
       )}
     </div>

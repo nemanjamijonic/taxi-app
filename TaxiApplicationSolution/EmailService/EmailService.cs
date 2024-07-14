@@ -199,6 +199,63 @@ namespace EmailService
             }
         }
 
+        public async Task<bool> DriverBlockingEmail(EmailInfo emailInfo)
+        {
+            try
+            {
+                string subject = "Your Account Has Been Blocked By Admin";
+
+                string htmlContent = $@"
+                    <html>
+                    <body>
+                        <h1>Account blocked. Driver ID: {emailInfo.Id}</h1>
+                        <p>Dear <b>{emailInfo.FirstName} {emailInfo.LastName}</b>,</p>
+                        <p>You have been blocked by admin, becouse of bad reviews of your drives.</p>
+                        <p>Your username: <b>{emailInfo.Username}</b></p>
+                        <p>You can now access our system, but cant take new drives.</p>
+                        <p>Best regards,<br/><b>Taxi Service Team</b></p>
+                        <br />
+                        <br />
+                        <p>Email sent by <b>EmailService</b></p>
+                    </body>
+                    </html>";
+
+                string plainTextContent = $@"
+                    Account blocked. Driver ID: {emailInfo.Id}
+                    Dear {emailInfo.FirstName} {emailInfo.LastName},
+                    You have been blocked by admin, becouse of bad reviews of your drives.
+                    Your username: {emailInfo.Username}
+                    You can now access our system, but cant take new drives.
+                    Best regards, Taxi Service Team
+                    Email sent by EmailService";
+
+                using (var client = new SmtpClient(smtpServer, port))
+                {
+                    client.EnableSsl = true;
+                    client.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
+
+                    using (var message = new MailMessage(fromEmail, emailInfo.Email))
+                    {
+                        message.Subject = subject;
+                        message.IsBodyHtml = true;
+                        message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(plainTextContent, null, "text/plain"));
+                        message.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(htmlContent, null, "text/html"));
+
+                        await client.SendMailAsync(message);
+                        Trace.TraceInformation("Email sent successfully.");
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"Error while sending mail: {ex.Message}");
+                return false;
+            }
+        }
+
+
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
             return this.CreateServiceRemotingInstanceListeners();
@@ -217,5 +274,6 @@ namespace EmailService
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }
         }
+
     }
 }

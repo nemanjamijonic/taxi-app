@@ -44,7 +44,7 @@ const MyRides: React.FC = () => {
 
     try {
       const userResponse = await axios.get(
-        "http://localhost:8766/api/User/user",
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/user`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -55,7 +55,9 @@ const MyRides: React.FC = () => {
       const userData = userResponse.data;
       setUsername(userData.username);
       setUserType(userData.userType);
-      setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
+      setUserImage(
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${userId}`
+      );
     } catch (error) {
       console.error("Error fetching user data:", error);
       setError("Failed to fetch user data. Please try again later.");
@@ -72,7 +74,7 @@ const MyRides: React.FC = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:8351/api/Drive/all-user-drives",
+        `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/all-user-drives`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -134,6 +136,7 @@ const MyRides: React.FC = () => {
                 aproximatedTime={drive.aproximatedTime}
                 aproximatedCost={drive.aproximatedCost}
                 driveState={drive.driveState}
+                userState={drive.userUsername}
                 userType={drive.userType}
               />
             ))

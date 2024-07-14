@@ -1,18 +1,18 @@
 .user-card {
   border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 16px;
-  margin: 8px;
-  color: #333; /* Change text color for better readability */
-  width: 400px; /* Adjust width to fit three cards per row */
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s; /* Add a subtle hover effect */
+  padding: 20px; /* Increased padding for better spacing */
+  max-width: 400px; /* Reduce max-width to better fit items on smaller screens */
+  width: 100%;
+  color: #333;
+  border-radius: 8px; /* Rounded corners */
+  background-color: #fff; /* White background for better contrast */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: transform 0.2s; /* Smooth hover effect */
 }
 
 .user-card:hover {
   transform: scale(1.05); /* Slight lift effect on hover */
-} 
+}
 
 .user-card p {
   text-align: left;
@@ -38,6 +38,11 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s; /* Add transition for hover effect */
+}
+
+.user-card-actions buton {
+  color: red;
+  width: 60%;
 }
 
 .user-card button:hover {

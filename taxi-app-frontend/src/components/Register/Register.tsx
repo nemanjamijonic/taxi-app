@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import axiosInstance from "../../axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import {  
+import {
   GoogleOAuthProvider,
   GoogleLogin,
   CredentialResponse,
@@ -48,7 +48,7 @@ const Register: React.FC = () => {
 
     try {
       const response = await axiosInstance.post(
-        "http://localhost:8766/api/Auth/register",
+        `${process.env.REACT_APP_BACKEND_URL_AUTH_API}/register`,
         formData,
         {
           headers: {
@@ -56,6 +56,9 @@ const Register: React.FC = () => {
           },
         }
       );
+      if (response.data.userType == "2") {
+        navigate("/login");
+      }
       const { token, imagePath } = response.data;
       localStorage.setItem("jwtToken", token);
       localStorage.setItem("imagePath", imagePath);
@@ -69,8 +72,11 @@ const Register: React.FC = () => {
     if (response.credential) {
       try {
         const res = await axiosInstance.post(
-          "http://localhost:8766/api/Auth/google-login",
-          { token: response.credential }
+          `${process.env.REACT_APP_BACKEND_URL_AUTH_API}/google-login`,
+          { token: response.credential },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
         );
         const { token } = res.data;
         localStorage.setItem("jwtToken", token);

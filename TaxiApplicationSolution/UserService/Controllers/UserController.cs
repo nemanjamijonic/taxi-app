@@ -289,6 +289,49 @@ namespace UserService.Controllers
             return BadRequest("User is not a driver");
         }
 
+
+        [HttpPost("block/{userId}")]
+        public async Task<IActionResult> BlockDriver(Guid userId)
+        {
+            var user = await _userDbContext.Users.FindAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            if (user.UserType == UserType.Driver)
+            {
+                if (user.UserState == UserState.Blocked) 
+                {
+                    return BadRequest("Driver already blocked.");
+                }
+                user.UserState = UserState.Blocked;
+                await _userDbContext.SaveChangesAsync();
+
+                EmailInfo emailInfo = new EmailInfo()
+                {
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Id = userId,
+                    UserType = user.UserType.ToString()
+                };
+
+                var emailServiceProxy = ServiceProxy.Create<IEmailInterface>(
+                new Uri("fabric:/TaxiApplication/EmailService")
+               );
+
+                var emailSent = await emailServiceProxy.DriverBlockingEmail(emailInfo);
+
+                return Ok("Succesfully validated driver!");
+            }
+
+            return BadRequest("User is not a driver");
+        }
+
+
         [HttpPost("reject/{userId}")]
         public async Task<IActionResult> RejectDriver(Guid userId)
         {

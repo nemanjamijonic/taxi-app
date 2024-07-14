@@ -4,7 +4,6 @@ import DriveItem from "../DriveItem/DriveItem";
 import Navbar from "../Navbar/Navbar";
 import "./AllDrives.css"; // Add any necessary styles for the list
 import { jwtDecode } from "jwt-decode";
-import { decode } from "punycode";
 import { useNavigate } from "react-router-dom";
 
 type Drive = {
@@ -41,17 +40,22 @@ const AllDrives: React.FC = () => {
       navigate("/dashboard");
     }
     try {
-      const response = await axios.get("http://localhost:8766/api/User/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/user`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const userData = response.data;
       const decodedToken: any = jwtDecode(token);
       const userId = decodedToken.nameid;
       setUsername(userData.username);
       setUserType(userData.userType);
-      setUserImage(`http://localhost:8766/api/User/get-image/${userId}`);
+      setUserImage(
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${userId}`
+      );
     } catch (error) {
       console.error("Error fetching user data:", error);
       setError("Failed to fetch user data. Please try again later.");
@@ -68,7 +72,7 @@ const AllDrives: React.FC = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:8351/api/Drive/drives",
+        `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/drives`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -128,6 +132,7 @@ const AllDrives: React.FC = () => {
               aproximatedCost={drive.aproximatedCost}
               driveState={drive.driveState}
               userType={drive.userType}
+              userState=""
             />
           ))
         )}
