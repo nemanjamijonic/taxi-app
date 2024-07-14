@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import DriveItem from "../DriveItem/DriveItem";
 import Navbar from "../Navbar/Navbar";
 import "./DriveList.css";
+import { jwtDecode } from "jwt-decode";
 
 type DriveItemProps = {
   id: string;
@@ -34,7 +35,10 @@ const DriveList: React.FC = () => {
           navigate("/login");
           return;
         }
-
+        const decodedToken: any = jwtDecode(token);
+        if (decodedToken.role != "Driver") {
+          navigate("/dashboard");
+        }
         const userResponse = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL_USER_API}/user`,
           {

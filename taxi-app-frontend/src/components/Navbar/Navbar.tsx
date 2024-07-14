@@ -23,45 +23,50 @@ const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <nav className="navbar">
-      <div className="navbar-buttons">
-        <button onClick={() => handleNavigation("/profile")}>Profile</button>
+      <div className="navbar-logo">
+        <img
+          src="/taxi-logo.png"
+          alt="Taxi App Logo"
+          className="navbar-logo-image"
+        />
+      </div>
+      <div className="navbar-links">
+        <span onClick={() => handleNavigation("/profile")}>Profile</span>
         {userType == "0" && (
           <>
-            <button onClick={() => handleNavigation("/verification")}>
-              Driver Verification List
-            </button>
-            <button onClick={() => handleNavigation("/all-drives")}>
-              All Rides
-            </button>
-            <button onClick={() => handleNavigation("/all-users")}>
+            <span onClick={() => handleNavigation("/verification")}>
+              Verification List
+            </span>
+            <span onClick={() => handleNavigation("/all-drives")}>
+              All Drives
+            </span>
+            <span onClick={() => handleNavigation("/all-users")}>
               All Users
-            </button>
+            </span>
           </>
         )}
         {userType == "1" && (
           <>
-            <button onClick={() => handleNavigation("/dashboard")}>
+            <span onClick={() => handleNavigation("/dashboard")}>
               Dashboard
-            </button>
-            <button onClick={() => handleNavigation("/create-drive")}>
-              New Ride
-            </button>
-            <button onClick={() => handleNavigation("/previous-rides")}>
-              Previous Rides
-            </button>
+            </span>
+            <span onClick={() => handleNavigation("/create-drive")}>
+              Create Drive
+            </span>
+            <span onClick={() => handleNavigation("/previous-rides")}>
+              Previous Drives
+            </span>
           </>
         )}
         {userType == "2" && (
           <>
-            <button onClick={() => handleNavigation("/dashboard")}>
+            <span onClick={() => handleNavigation("/dashboard")}>
               Dashboard
-            </button>
-            <button onClick={() => handleNavigation("/new-driver-rides")}>
+            </span>
+            <span onClick={() => handleNavigation("/new-driver-rides")}>
               New Rides
-            </button>
-            <button onClick={() => handleNavigation("/my-rides")}>
-              My Rides
-            </button>
+            </span>
+            <span onClick={() => handleNavigation("/my-rides")}>My Rides</span>
           </>
         )}
       </div>

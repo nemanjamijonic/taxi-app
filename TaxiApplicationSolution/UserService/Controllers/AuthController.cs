@@ -2,18 +2,21 @@
 using Common.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using UserService.Database;
 using UserService.Dto;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Common.Interfaces;
 using Common.Models;
-using Microsoft.Extensions.Hosting;
+using System.IO;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 
 namespace UserService.Controllers
 {
@@ -145,6 +148,59 @@ namespace UserService.Controllers
 
             return Ok("Registration successful");
         }
+
+        [HttpPost("google-login")]
+        public IActionResult GoogleLogin()
+        {
+            var properties = new AuthenticationProperties { RedirectUri = Url.Action(nameof(GoogleResponse)) };
+            properties.Items["LoginProvider"] = GoogleDefaults.AuthenticationScheme;
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("google-response")]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+            if (!authenticateResult.Succeeded)
+                return BadRequest();
+
+            var claims = authenticateResult.Principal.Identities
+                .FirstOrDefault()?.Claims.Select(claim => new
+                {
+                    claim.Type,
+                    claim.Value
+                });
+
+            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var firstName = claims?.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
+            var lastName = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
+
+            var user = _userDbContext.Users.SingleOrDefault(u => u.Email == email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = email,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    CreatedAt = DateTime.UtcNow.AddHours(2),
+                    UserState = UserState.Verified,
+                    UserType = UserType.User,
+                    IsDeleted = false
+                };
+
+                _userDbContext.Users.Add(user);
+                _userDbContext.SaveChanges();
+            }
+
+            var token = GenerateJwtToken(user);
+
+            HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:3000"); // Dodajte ovo
+            return Ok(new { token });
+        }
+
+
 
         private string GenerateJwtToken(User user)
         {

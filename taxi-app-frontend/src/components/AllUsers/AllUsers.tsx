@@ -34,6 +34,10 @@ const AllUsers: React.FC = () => {
     if (!token) {
       navigate("/login");
     } else {
+      const decodedToken: any = jwtDecode(token);
+      if (decodedToken.role != "Admin") {
+        navigate("/dashboard");
+      }
       const fetchData = async () => {
         try {
           const response = await fetch("http://localhost:8766/api/User/users", {

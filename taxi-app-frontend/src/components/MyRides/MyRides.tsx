@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import { jwtDecode } from "jwt-decode";
 import DriveItem from "../DriveItem/DriveItem";
@@ -25,6 +26,7 @@ const MyRides: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [userType, setUserType] = useState<string>("");
   const [userImage, setUserImage] = useState<string>("");
+  const navigate = useNavigate();
 
   const fetchUserData = useCallback(async () => {
     const token = localStorage.getItem("jwtToken");
@@ -36,6 +38,9 @@ const MyRides: React.FC = () => {
 
     const decodedToken: any = jwtDecode(token);
     const userId = decodedToken.nameid;
+    if (decodedToken.role != "Driver") {
+      navigate("/dashboard");
+    }
 
     try {
       const userResponse = await axios.get(

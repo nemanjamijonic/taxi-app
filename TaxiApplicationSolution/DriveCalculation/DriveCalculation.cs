@@ -24,15 +24,11 @@ namespace DriveCalculation
             : base(context)
         { }
 
-        public Task<double> EstimateDriveTime()
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<double> EstimateTime()
         {
             // Generate a random time between 60 and 120 seconds
-            double estimatedTimeSeconds = RandomGenerator.Next(60, 121);
+            double estimatedTimeSeconds = RandomGenerator.Next(9, 21);
             return Task.FromResult(estimatedTimeSeconds);
         }
 

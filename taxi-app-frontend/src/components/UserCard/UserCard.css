@@ -4,7 +4,7 @@
   padding: 16px;
   margin: 8px;
   color: #333; /* Change text color for better readability */
-  width: 35 0px; /* Adjust width to fit three cards per row */
+  width: 400px; /* Adjust width to fit three cards per row */
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s; /* Add a subtle hover effect */
@@ -12,14 +12,20 @@
 
 .user-card:hover {
   transform: scale(1.05); /* Slight lift effect on hover */
-}
+} 
 
 .user-card p {
-  margin: 8px 0;
+  text-align: left;
+  margin: 5px 0;
+  font-size: 1rem; /* Standard font size */
 }
 
-.user-card h2 {
-  background-color: red;
+.user-card hr {
+  border: 1px solid #2575fc;
+}
+
+.user-card h3 {
+  color: #6a11cb;
 }
 
 .user-card button {

@@ -1,8 +1,13 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axiosInstance from "../../axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import {  
+  GoogleOAuthProvider,
+  GoogleLogin,
+  CredentialResponse,
+} from "@react-oauth/google";
 import "./Register.css";
 
 type RegisterFormInputs = {
@@ -42,7 +47,7 @@ const Register: React.FC = () => {
     formData.append("ImageFile", data.imageFile[0]);
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         "http://localhost:8766/api/Auth/register",
         formData,
         {
@@ -57,6 +62,22 @@ const Register: React.FC = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleGoogleLogin = async (response: CredentialResponse) => {
+    if (response.credential) {
+      try {
+        const res = await axiosInstance.post(
+          "http://localhost:8766/api/Auth/google-login",
+          { token: response.credential }
+        );
+        const { token } = res.data;
+        localStorage.setItem("jwtToken", token);
+        navigate("/dashboard");
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -153,6 +174,16 @@ const Register: React.FC = () => {
         <button type="submit" className="btn button-register">
           Register
         </button>
+        <div className="google-login">
+          <GoogleOAuthProvider clientId="1060472910731-36b4gj3k7hknmjinifkd5apo3clvknad.apps.googleusercontent.com">
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
+          </GoogleOAuthProvider>
+        </div>
         <div className="links">
           <Link to="/login">Already have an account? Login</Link>
         </div>

@@ -11,6 +11,5 @@ namespace Common.Interfaces
     {
         Task<double> EstimateTime();
         Task<double> EstimatePrice();
-        Task<double> EstimateDriveTime();
     }
 }

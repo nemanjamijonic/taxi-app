@@ -30,6 +30,12 @@ const Verification: React.FC = () => {
     } else {
       const decodedToken: any = jwtDecode(token);
       const userId = decodedToken.nameid;
+      const role = decodedToken.role;
+      {
+        if (role != "Admin") {
+          navigate("/dashboard");
+        }
+      }
       // Fetch unverified drivers
       fetch("http://localhost:8766/api/User/unverified-drivers", {
         headers: {
@@ -137,6 +143,7 @@ const Verification: React.FC = () => {
         userImage={userImage}
         onLogout={handleLogout}
       />
+      <h1>Driver Verification List</h1>
       <div className="verification-content">
         {unverifiedUsers.length === 0 ? (
           <h2>No unverified users found.</h2>

@@ -36,7 +36,9 @@ const CreateDrive: React.FC = () => {
         const extractedUsername = decodedToken.unique_name;
         const userId = decodedToken.nameid;
         setUsername(extractedUsername);
-
+        if (decodedToken.role != "User") {
+          navigate("/dashboard");
+        }
         // Fetch additional user data from your backend if needed
         const userResponse = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL_USER_API}/user`,

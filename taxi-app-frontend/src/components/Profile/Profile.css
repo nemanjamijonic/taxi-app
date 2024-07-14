@@ -1,8 +1,8 @@
 .profile-container {
   max-width: 600px;
   width: 600px;
-  height: 700;
-  margin: 120px auto;
+  height: 500;
+  margin-top: 150 px;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -10,8 +10,13 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s; /* Smooth hover effect */
 }
+
+.profile-div {
+  margin-top: 70px;
+}
+
 .profile-container:hover {
-  transform: scale(1.02); /* Slightly enlarge on hover */
+  transform: scale(1.01); /* Slightly enlarge on hover */
 }
 
 .profile-container h2 {
@@ -59,9 +64,9 @@
 .profile-image {
   display: block;
   margin: 0 auto 20px;
-  max-width: 120px;
-  width: 120px;
-  height: 120px;
+  max-width: 80px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #007bff;

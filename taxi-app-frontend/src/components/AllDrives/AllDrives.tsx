@@ -4,6 +4,8 @@ import DriveItem from "../DriveItem/DriveItem";
 import Navbar from "../Navbar/Navbar";
 import "./AllDrives.css"; // Add any necessary styles for the list
 import { jwtDecode } from "jwt-decode";
+import { decode } from "punycode";
+import { useNavigate } from "react-router-dom";
 
 type Drive = {
   id: string;
@@ -25,6 +27,7 @@ const AllDrives: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [userType, setUserType] = useState<string>("");
   const [userImage, setUserImage] = useState<string>("");
+  const navigate = useNavigate();
 
   const fetchUserData = useCallback(async () => {
     const token = localStorage.getItem("jwtToken");
@@ -33,7 +36,10 @@ const AllDrives: React.FC = () => {
       setLoading(false);
       return;
     }
-
+    const decodedToken: any = jwtDecode(token);
+    if (decodedToken.role != "Admin") {
+      navigate("/dashboard");
+    }
     try {
       const response = await axios.get("http://localhost:8766/api/User/user", {
         headers: {

@@ -3,28 +3,15 @@
   justify-content: center;
   align-items: center;
   padding: 20px;
-  background: linear-gradient(
-      217deg,
-      rgba(91, 134, 246, 0.8),
-      rgba(91, 134, 246, 0) 70.71%
-    ),
-    linear-gradient(
-      127deg,
-      rgba(74, 133, 189, 0.8),
-      rgba(74, 133, 189, 0) 70.71%
-    ),
-    linear-gradient(
-      336deg,
-      rgba(51, 107, 137, 0.8),
-      rgba(51, 107, 137, 0) 70.71%
-    );
+  background-color: #154c79;
+  /*background: transparent;  Keep background transparent or set it as needed */
   color: white;
   font-size: 1rem;
-  z-index: 10;
+  z-index: 1000; /* Ensure this value is higher than other elements */
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   text-align: center;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px -10px 10px rgba(0, 0, 0, 0.4); /* Adjusted shadow direction and added blur */
 }

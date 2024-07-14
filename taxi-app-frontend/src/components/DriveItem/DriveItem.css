@@ -18,7 +18,7 @@
   transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
-.drive-item h1 {
+.drive-item h3 {
   color: #6a11cb; /* Green color for drive ID */
   font-size: 1.2rem;
   margin-bottom: 10px;

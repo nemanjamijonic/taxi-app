@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using UserService.Database;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace UserService
 {
@@ -40,33 +42,39 @@ namespace UserService
 
                         // Add CORS policy
                         builder.Services.AddCors(options =>
-                        {
-                            options.AddDefaultPolicy(builder =>
-                            {
-                                builder.AllowAnyOrigin()
-                                       .AllowAnyMethod()
-                                       .AllowAnyHeader();
-                            });
+{
+                            options.AddPolicy("AllowSpecificOrigin",
+                                builder => builder
+                                    .WithOrigins("http://localhost:3000")
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod()
+                                    .AllowCredentials());
                         });
+
 
                         // JWT Authentication
                         var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-                        builder.Services.AddAuthentication(x =>
+                        builder.Services.AddAuthentication(options =>
                         {
-                            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                         })
-                        .AddJwtBearer(x =>
+                        .AddJwtBearer(options =>
                         {
-                            x.RequireHttpsMetadata = false;
-                            x.SaveToken = true;
-                            x.TokenValidationParameters = new TokenValidationParameters
+                            options.RequireHttpsMetadata = false;
+                            options.SaveToken = true;
+                            options.TokenValidationParameters = new TokenValidationParameters
                             {
                                 ValidateIssuerSigningKey = true,
                                 IssuerSigningKey = new SymmetricSecurityKey(key),
                                 ValidateIssuer = false,
                                 ValidateAudience = false
                             };
+                        })
+                        .AddGoogle(options =>
+                        {
+                            options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                            options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
                         });
 
                         // Ensure that WebRootPath is set correctly
@@ -93,12 +101,7 @@ namespace UserService
                         app.UseAuthorization();
 
                         // Use CORS
-                        app.UseCors(options =>
-                        {
-                            options.AllowAnyOrigin()
-                                   .AllowAnyMethod()
-                                   .AllowAnyHeader();
-                        });
+                        app.UseCors("AllowSpecificOrigin");
 
                         app.MapControllers();
 

@@ -4,11 +4,6 @@
   margin-top: 70px; /* Adjust for fixed navbar */
 }
 
-.verification-content h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
 .verification-content .user-grid {
   display: flex;
   flex-wrap: wrap;

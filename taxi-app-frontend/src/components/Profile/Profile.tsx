@@ -124,6 +124,9 @@ const Profile: React.FC = () => {
       <div className="profile-container">
         <h2>Profile</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
+          {imageUrl && (
+            <img src={imageUrl} alt="User" className="profile-image" />
+          )}
           <div className="form-group">
             <label>Username</label>
             <input type="text" {...register("username", { required: true })} />

@@ -36,7 +36,9 @@ const UserDrives: React.FC = () => {
       // Decode the token to get the userId
       const decodedToken: any = jwtDecode(token);
       const userId = decodedToken.nameid;
-
+      if (decodedToken.role != "User") {
+        navigate("/dashboard");
+      }
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/user-drives`,
         {

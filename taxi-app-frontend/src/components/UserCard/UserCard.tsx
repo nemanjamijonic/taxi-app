@@ -52,7 +52,8 @@ const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
 
   return (
     <div className="user-card">
-      <h2>{user.id}</h2>
+      <h3>{user.id}</h3>
+      <hr />
       <p>
         <strong>Username:</strong> {user.username}
       </p>
@@ -65,11 +66,11 @@ const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
         </p>
       ) : (
         <p>
-          <strong>Type:</strong> Driver
+          <strong>User Type:</strong> Driver
         </p>
       )}
       <p>
-        <strong>Name:</strong> {user.firstName} {user.lastName}
+        <strong>Full Name:</strong> {user.firstName} {user.lastName}
       </p>
       <p>
         <strong>Status:</strong> {getUserState(user.userState)}
@@ -84,7 +85,11 @@ const UserCard: React.FC<UserCardProps> = ({ user, onVerify, onRejection }) => {
           <strong>Driver Has No Ratings Yet</strong>
         </p>
       )}
-
+      {user.userType == "1" && (
+        <p>
+          <strong>User Can't Be Rated</strong>
+        </p>
+      )}
       {user.userType == "2" && user.userState == "0" && (
         <>
           <button onClick={() => onVerify(user.id)}>Verify Driver</button>

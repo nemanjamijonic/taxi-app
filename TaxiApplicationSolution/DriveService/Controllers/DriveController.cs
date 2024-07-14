@@ -45,7 +45,7 @@ namespace DriveService.Controllers
                 return Unauthorized(new { message = "Invalid token." });
             }
 
-            var drives = await _context.Drives.Where(d => !d.IsDeleted && d.DriveState != DriveState.DriveCompleted).ToListAsync();
+            var drives = await _context.Drives.Where(d => !d.IsDeleted).ToListAsync();
             return Ok(drives);
         }
 
