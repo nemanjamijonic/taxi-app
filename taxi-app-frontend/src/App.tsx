@@ -5,13 +5,12 @@ import Register from "./components/Register/Register";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Profile from "./components/Profile/Profile";
 import Verification from "./components/Verification/Verification";
-import CreateDrive from "./components/NewRide/CreateDrive";
+import CreateDrive from "./components/CreateDrive/CreateDrive";
 import UserDrives from "./components/UserDrives/UserDrives";
 import DriveList from "./components/DriveList/DriveList";
 import AllUsers from "./components/AllUsers/AllUsers";
 import AllDrives from "./components/AllDrives/AllDrives";
 import MyRides from "./components/MyRides/MyRides";
-
 
 import "./App.css";
 

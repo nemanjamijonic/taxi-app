@@ -23,7 +23,7 @@ const DriveItem: React.FC<DriveItemProps> = ({
   startingAddress,
   endingAddress,
   createdAt,
-  userUsername, 
+  userUsername,
   driverUsername,
   aproximatedTime,
   aproximatedCost,
@@ -37,7 +37,7 @@ const DriveItem: React.FC<DriveItemProps> = ({
   return (
     <div className="drive-item">
       <h1>{id}</h1>
-      <hr></hr>
+      <hr />
       <p>
         <strong>Starting Address:</strong> {startingAddress}
       </p>
@@ -51,7 +51,8 @@ const DriveItem: React.FC<DriveItemProps> = ({
         <strong>Drive Created By:</strong> {userUsername}
       </p>
       <p>
-        <strong>Offer By Driver:</strong> {driverUsername}
+        <strong>Offer By Driver:</strong>{" "}
+        {driverUsername == "" ? "No current offer" : driverUsername}
       </p>
       <p>
         <strong>Approx. Time:</strong> {aproximatedTime} seconds
@@ -60,8 +61,7 @@ const DriveItem: React.FC<DriveItemProps> = ({
         <strong>Approx. Cost:</strong> ${aproximatedCost}
       </p>
       <p>
-        <strong>State:</strong>
-        {driveState == "0" && "User Ordered Ride"}
+        <strong>State:</strong> {driveState == "0" && "User Ordered Ride"}
         {driveState == "1" && "Driver Created Offer"}
         {driveState == "2" && "User Accepted Drive"}
         {driveState == "3" && "User Declined Drive"}

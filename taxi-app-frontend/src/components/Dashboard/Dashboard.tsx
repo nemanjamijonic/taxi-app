@@ -7,6 +7,12 @@ import DriveItem from "../DriveItem/DriveItem";
 import "./Dashboard.css";
 import ReactStars from "react-rating-stars-component";
 import { CButton } from "@coreui/react";
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  LogLevel,
+} from "@microsoft/signalr";
+import ChatApp from "../ChatApp/ChatApp";
 
 type Drive = {
   id: string;
@@ -19,6 +25,11 @@ type Drive = {
   aproximatedCost: number;
   driveState: string;
 };
+
+interface Message {
+  username: string;
+  msg: string;
+}
 
 const Dashboard: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -35,6 +46,9 @@ const Dashboard: React.FC = () => {
   const [completionMessage, setCompletionMessage] = useState(false);
   const [currentRating, setCurrentRating] = useState<number | null>(null);
   const [showRatingForm, setShowRatingForm] = useState(false);
+  const [conn, setConnection] = useState<HubConnection | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isChatVisible, setIsChatVisible] = useState(false);
   const navigate = useNavigate();
 
   const fetchUserData = useCallback(async () => {
@@ -47,7 +61,7 @@ const Dashboard: React.FC = () => {
       const decodedToken: any = jwtDecode(token);
       const userId = decodedToken.nameid;
       const userRole = decodedToken.role;
-      console.log(userRole);
+
       const userResponse = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL_USER_API}/user`,
         {
@@ -77,7 +91,7 @@ const Dashboard: React.FC = () => {
       });
 
       setUserDrive(driveResponse.data);
-      if (driveResponse.data.driveState == 2) {
+      if (driveResponse.data.driveState == "2") {
         setTimeLeft(driveResponse.data.aproximatedTime);
       }
     } catch (error) {
@@ -234,6 +248,62 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const joinChatRoom = async () => {
+    try {
+      const connection = new HubConnectionBuilder()
+        .withUrl("https://localhost:8275/chat")
+        .configureLogging(LogLevel.Information)
+        .build();
+
+      connection.on("JoinSpecificChatRoom", (admin, msg) => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { username: admin, msg },
+        ]);
+      });
+
+      connection.on("ReceiveSpecificMessage", (username, msg) => {
+        setMessages((prevMessages) => [...prevMessages, { username, msg }]);
+      });
+
+      await connection.start();
+      await connection.invoke("JoinSpecificChatRoom", {
+        userName: username,
+        chatRoom: userDrive?.id,
+      });
+      setConnection(connection);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const sendMessage = async (message: string) => {
+    try {
+      if (conn) {
+        await conn.invoke("SendMessage", message);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    if (timeLeft !== 0) {
+      joinChatRoom();
+    }
+  }, [timeLeft]);
+
+  useEffect(() => {
+    // Kontrola vidljivosti chata
+    if (timeLeft != 0 && userDrive) {
+      setIsChatVisible(true);
+    } else if (rideTimeLeft !== null && rideTimeLeft > 0) {
+      setIsChatVisible(true);
+    } else {
+      setIsChatVisible(false);
+    }
+  }, [timeLeft, rideTimeLeft, userDrive]);
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -256,11 +326,6 @@ const Dashboard: React.FC = () => {
         <p>
           <strong>Email:</strong> {email}
         </p>
-        {userType == "2" && (
-          <>
-            <p>userstate</p>
-          </>
-        )}
         <p>
           <strong>User Type:</strong> {userType == "1" ? "User" : "Driver"}
         </p>
@@ -331,6 +396,10 @@ const Dashboard: React.FC = () => {
               Submit Rating
             </CButton>
           </div>
+        )}
+
+        {isChatVisible && userDrive && (
+          <ChatApp username={username} chatroom={userDrive.id} />
         )}
       </div>
     </div>

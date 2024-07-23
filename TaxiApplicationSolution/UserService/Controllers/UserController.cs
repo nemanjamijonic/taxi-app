@@ -119,6 +119,29 @@ namespace UserService.Controllers
             return Ok(users);
         }
 
+        [HttpGet("drivers")]
+        public async Task<IActionResult> GetAllActiveDrivers()
+        {
+            var jwtToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(jwtToken);
+
+            var claims = decodedToken.Claims.ToList();
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var users = await _userDbContext.Users
+                .Where(user => !user.IsDeleted && user.UserState != UserState.Created && user.UserState != UserState.Rejected && user.UserType == UserType.Driver)
+                .ToListAsync();
+
+            return Ok(users);
+        }
+
         [HttpGet("user")]
         public async Task<IActionResult> GetUserProfile()
         {
@@ -155,7 +178,6 @@ namespace UserService.Controllers
                 user.UserType,
             });
         }
-
 
 
         [HttpPost("update-profile")]
@@ -249,7 +271,6 @@ namespace UserService.Controllers
             return Unauthorized(new { message = "Invalid role." });
 
         }
-
 
         // Metoda za validaciju vozača
         [HttpPost("validate/{userId}")]

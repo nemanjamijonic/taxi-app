@@ -210,10 +210,7 @@ namespace UserService.Controllers
             return Ok(new { token });
         }
 
-
-
-
-
+        
         private string GenerateJwtToken(User user)
         {
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] ?? string.Empty);

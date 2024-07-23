@@ -36,6 +36,7 @@ const DriveList: React.FC = () => {
           return;
         }
         const decodedToken: any = jwtDecode(token);
+        const userId = decodedToken.nameid;
         if (decodedToken.role != "Driver") {
           navigate("/dashboard");
         }
@@ -52,7 +53,7 @@ const DriveList: React.FC = () => {
         setUsername(userData.username);
         setUserType(userData.userType);
         setUserImage(
-          `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${userData.imagePath}`
+          `${process.env.REACT_APP_BACKEND_URL_USER_API}/get-image/${userId}`
         );
 
         if (userData.userType !== 2) {

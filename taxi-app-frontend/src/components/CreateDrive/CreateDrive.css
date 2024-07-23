@@ -1,0 +1,61 @@
+.maps-div {
+  width: 90vw;
+  height: 70vh;
+  margin-bottom: 100px;
+}
+
+.direction-container {
+  position: absolute;
+  top: 10px; /* Adjust based on your navbar height */
+  right: 10px;
+  width: 350px; /* Adjust the width as needed */
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.direction-details {
+  margin-bottom: 10px;
+}
+
+.create-drive-button {
+  width: 200px;
+  margin-top: 10px;
+}
+
+.direction-details p {
+  color: #333;
+}
+
+.route-list {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.route-item {
+  margin-bottom: 5px;
+}
+
+.input-container input {
+  width: 800px;
+  margin-top: 10px;
+}
+
+.route-button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.route-button:hover {
+  background-color: #0056b3;
+}

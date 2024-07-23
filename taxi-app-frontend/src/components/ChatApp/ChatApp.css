@@ -1,0 +1,38 @@
+.chat-app-container {
+  position: fixed;
+  border-radius: 10px 10px 0px 0px;
+  margin-right: 2px;
+  margin-bottom: 60px;
+  bottom: 0;
+  right: 0;
+  width: 580px;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 15px;
+}
+
+.chat-room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 60px;
+  padding-bottom: 5px;
+}
+
+.chat-room-header h2 {
+  margin: 0;
+}
+
+.chat-room-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.chat-room-input {
+  margin-top: 10px;
+}

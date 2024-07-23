@@ -6,14 +6,13 @@ import reportWebVitals from "./reportWebVitals";
 import Footer from "./components/Footer/Footer";
 import axios from "axios";
 
-
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
     <App />
-    <Footer />
+    <Footer></Footer>
   </React.StrictMode>
 );
 
