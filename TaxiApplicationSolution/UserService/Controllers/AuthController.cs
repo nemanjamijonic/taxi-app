@@ -146,10 +146,16 @@ namespace UserService.Controllers
 
             var emailSent = await emailServiceProxy.UserRegistrationEmail(emailInfo);
 
+            if (user.UserType == UserType.Driver)
+            {
+                return StatusCode(201); // Return 201 Created status for drivers
+            }
+
             var token = GenerateJwtToken(user);
 
-            return Ok("Registration successful");
+            return Ok(new { token, imagePath = user.ImageName });
         }
+
 
         [HttpPost("google-login")]
         public IActionResult GoogleLogin()

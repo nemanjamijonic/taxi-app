@@ -101,7 +101,6 @@ const Profile: React.FC = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Profile updated successfully:", data);
         navigate("/dashboard");
       })
       .catch((error) => console.error("Error updating profile:", error));

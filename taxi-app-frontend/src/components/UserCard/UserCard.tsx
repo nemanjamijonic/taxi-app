@@ -28,7 +28,7 @@ const UserCard: React.FC<UserCardProps> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user.userType === "2") {
+    if (user.userType == "2") {
       const fetchAverageRating = async () => {
         try {
           const response = await axios.get(

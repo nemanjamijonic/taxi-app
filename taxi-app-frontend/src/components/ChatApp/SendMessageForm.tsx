@@ -15,14 +15,25 @@ const SendMessageForm: React.FC<SendMessageFormProps> = ({ sendMessage }) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form
+      onSubmit={handleSubmit}
+      style={{
+        borderRadius: "10px",
+        padding: "10px",
+        backgroundColor: "#3f4b54",
+      }}
+    >
       <InputGroup className="mb-3">
         <Form.Control
           onChange={(e) => setMessage(e.target.value)}
           value={msg}
           placeholder="Enter a message"
         />
-        <Button variant="primary" type="submit" disabled={!msg}>
+        <Button
+          style={{ color: "white", backgroundColor: "#40a8ff" }}
+          type="submit"
+          disabled={!msg}
+        >
           Send message
         </Button>
       </InputGroup>

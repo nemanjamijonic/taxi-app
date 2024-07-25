@@ -106,10 +106,28 @@ namespace UserService.Controllers
 
             var claims = decodedToken.Claims.ToList();
             var userIdClaim = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+            var roleClaim = claims.FirstOrDefault(c => c.Type == "role")?.Value;
+            var expClaim = claims.FirstOrDefault(c => c.Type == "exp")?.Value;
 
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
             {
                 return Unauthorized(new { message = "Invalid token." });
+            }
+
+            if (roleClaim != "Admin")
+            {
+                return Forbid("You are not authorized to acces this method");
+            }
+
+            if (expClaim == null || !long.TryParse(expClaim, out var exp))
+            {
+                return Unauthorized(new { message = "Invalid token expiration." });
+            }
+
+            var tokenExpirationTime = DateTimeOffset.FromUnixTimeSeconds(exp).UtcDateTime;
+            if (tokenExpirationTime < DateTime.UtcNow)
+            {
+                return Unauthorized(new { message = "Token has expired." });
             }
 
             var users = await _userDbContext.Users
@@ -118,6 +136,8 @@ namespace UserService.Controllers
 
             return Ok(users);
         }
+
+
 
         [HttpGet("drivers")]
         public async Task<IActionResult> GetAllActiveDrivers()

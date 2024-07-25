@@ -321,11 +321,9 @@ const Dashboard: React.FC = () => {
         onLogout={handleLogout}
       />
       <div className="dashboard-container">
-        <h1>Welcome, {username}</h1>
-        <h2>User Information</h2>
-        <p>
-          <strong>Email:</strong> {email}
-        </p>
+        <h1>
+          Welcome to Dashboard, <b>{email}</b>
+        </h1>
         <p>
           <strong>User Type:</strong> {userType == "1" ? "User" : "Driver"}
         </p>
@@ -399,7 +397,11 @@ const Dashboard: React.FC = () => {
         )}
 
         {isChatVisible && userDrive && (
-          <ChatApp username={username} chatroom={userDrive.id} />
+          <ChatApp
+            role={userType}
+            username={username}
+            chatroom={userDrive.id}
+          />
         )}
       </div>
     </div>

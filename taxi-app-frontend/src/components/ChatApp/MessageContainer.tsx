@@ -14,18 +14,33 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ messages }) => {
   return (
     <div>
       {messages.map((msg, index) => (
-        <Table striped bordered key={index}>
+        <Table striped bordered key={index} style={{ marginBottom: "10px" }}>
           <tbody>
             <tr>
               <td>
                 <p
                   style={{
-                    color: "red",
+                    border: "2px solid #ddd",
+                    borderRadius: "10px",
+                    padding: "10px",
+                    backgroundColor: "#f9f9f9",
+                    marginBottom: "-10px",
                   }}
                 >
-                  <strong style={{ color: "blue" }}>{msg.username}:</strong>{" "}
-                  {msg.msg}
-                  <hr></hr>
+                  <strong style={{ color: "#40a8ff" }}>{msg.username}:</strong>{" "}
+                  <span style={{ color: "#6c7e8c" }}>{msg.msg}</span>
+                  <span
+                    style={{
+                      display: "block",
+                      textAlign: "right",
+                      marginTop: "5px",
+                      fontSize: "0.9em",
+                      color: "gray",
+                      fontWeight: "normal",
+                    }}
+                  >
+                    Sent at: {new Date().toLocaleTimeString()}
+                  </span>
                 </p>
               </td>
             </tr>

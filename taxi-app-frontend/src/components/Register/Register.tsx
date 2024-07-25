@@ -56,13 +56,14 @@ const Register: React.FC = () => {
           },
         }
       );
-      if (response.data.userType == "2") {
-        navigate("/login");
+      if (response.status === 201) {
+        navigate("/login"); // Redirect to login if status is 201 (Driver)
+      } else {
+        const { token, imagePath } = response.data;
+        localStorage.setItem("jwtToken", token);
+        localStorage.setItem("imagePath", imagePath);
+        navigate("/dashboard"); // Redirect to dashboard if user is a regular user
       }
-      const { token, imagePath } = response.data;
-      localStorage.setItem("jwtToken", token);
-      localStorage.setItem("imagePath", imagePath);
-      navigate("/dashboard");
     } catch (error) {
       console.error(error);
     }

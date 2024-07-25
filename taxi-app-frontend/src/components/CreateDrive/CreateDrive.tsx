@@ -57,9 +57,7 @@ const geocodeAddress = async (
         address
       )}&key=${apiKey}`
     );
-    console.log("API response:", response);
-    console.log("Response status:", response.status);
-    console.log("Response data:", response.data);
+
 
     if (response.data.status !== "OK") {
       console.error("Geocoding API error:", response.data.status);
@@ -67,7 +65,7 @@ const geocodeAddress = async (
     }
 
     const results = response.data.results;
-    console.log("Geocoding results:", results);
+
 
     if (results.length > 0) {
       const location = results[0].geometry.location;
@@ -165,9 +163,7 @@ export default function CreateDrive() {
 
       // Geocode addresses
       for (const driver of driversData) {
-        console.log(driver.address);
         const coords = await geocodeAddress(driver.address);
-        console.log(coords);
         if (coords) {
           driver.lat = coords.lat;
           driver.lng = coords.lng;
@@ -199,7 +195,6 @@ export default function CreateDrive() {
     setAddress: React.Dispatch<React.SetStateAction<string>>
   ) => {
     const place = autocompleteRef.current?.getPlace();
-    console.log("Selected place:", place);
     if (place && place.geometry && place.geometry.location) {
       const location = place.geometry.location;
       const lat =
@@ -210,7 +205,6 @@ export default function CreateDrive() {
 
       const formattedAddress = formatAddress(place.formatted_address ?? "");
       setAddress(formattedAddress);
-      console.log("Formatted address:", formattedAddress);
     }
   };
 
@@ -355,6 +349,7 @@ function Directions({
   const [routeIndex, setRouteIndex] = useState(0);
   const selected = routes[routeIndex];
   const leg = selected?.legs[0];
+
 
   useEffect(() => {
     if (!routesLibrary || !map) return;

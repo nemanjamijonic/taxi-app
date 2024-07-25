@@ -39,9 +39,6 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ChatService\ChatService.csproj">
-      <ServiceLaunchUrl>http://localhost:{ServicePort}/swagger</ServiceLaunchUrl>
-    </ProjectReference>
     <ProjectReference Include="..\DriveCalculation\DriveCalculation.csproj" />
     <ProjectReference Include="..\DriveService\DriveService.csproj">
       <ServiceLaunchUrl>http://localhost:{ServicePort}/swagger</ServiceLaunchUrl>
