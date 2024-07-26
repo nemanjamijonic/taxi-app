@@ -25,7 +25,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ messages, sendMessage }) => (
         <MessageContainer messages={messages} />
       </Col>
       <br></br>
-      <Col sm={12}>
+      <Col sm={12} className="chat-room-footer">
         <SendMessageForm sendMessage={sendMessage} />
       </Col>
     </Row>

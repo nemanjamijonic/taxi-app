@@ -17,6 +17,7 @@ using Common.Models;
 using System.IO;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
+using Google.Apis.Auth;
 
 namespace UserService.Controllers
 {
@@ -157,66 +158,113 @@ namespace UserService.Controllers
         }
 
 
-        [HttpPost("google-login")]
-        public IActionResult GoogleLogin()
+        public class GoogleLoginRequest
         {
-            var properties = new AuthenticationProperties { RedirectUri = Url.Action(nameof(GoogleResponse)) };
-            properties.Items["LoginProvider"] = GoogleDefaults.AuthenticationScheme;
-
-            HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:3000");
-            HttpContext.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-
-            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+            public string Token { get; set; }
         }
 
 
-
-        [HttpGet("google-response")]
-        public async Task<IActionResult> GoogleResponse()
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
         {
-            var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            string token = request.Token;
+            Console.WriteLine($"Received token: {token}");
 
-            if (!authenticateResult.Succeeded)
-                return BadRequest();
+            var googleClientId = _configuration["Authentication:Google:ClientId"];
+            GoogleJsonWebSignature.Payload payload;
 
-            var claims = authenticateResult.Principal.Identities
-                .FirstOrDefault()?.Claims.Select(claim => new
-                {
-                    claim.Type,
-                    claim.Value
-                });
+            try
+            {
+                payload = await GoogleTokenValidator.ValidateAsync(token, googleClientId);
+            }
+            catch (InvalidJwtException)
+            {
+                return BadRequest("Invalid Google token");
+            }
 
-            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            var firstName = claims?.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
-            var lastName = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
+            var hashedPassword = HashHelper.HashPassword(payload.GivenName + payload.FamilyName);
+            var state = payload.EmailVerified;
+            UserState userState = UserState.Created;
+            if (state)
+            {
+                userState = UserState.Verified;
+            }
 
-            var user = _userDbContext.Users.SingleOrDefault(u => u.Email == email);
+            var user = _userDbContext.Users.SingleOrDefault(u => u.Email == payload.Email);
             if (user == null)
             {
-                user = new User
+                user = new User()
                 {
-                    Email = email,
-                    FirstName = firstName,
-                    LastName = lastName,
-                    CreatedAt = DateTime.UtcNow.AddHours(2),
-                    UserState = UserState.Verified,
+                    Email = payload.Email,
+                    FirstName = payload.GivenName,
+                    LastName = payload.FamilyName,
+                    UserState = userState,
+                    Username = payload.Name,
                     UserType = UserType.User,
-                    IsDeleted = false
+                    CreatedAt = DateTime.UtcNow,
+                    Address = "",
+                    IsDeleted = false,
+                    PasswordHash = hashedPassword,
+                    ImageName = ""
                 };
 
                 _userDbContext.Users.Add(user);
-                await _userDbContext.SaveChangesAsync();
+                _userDbContext.SaveChanges();
+
+                // Učitaj sliku sa putanje i sačuvaj je koristeći SaveImage metodu
+                var imagePath = @"C:\github\TaxiApp\TaxiApplicationSolution\Images\profile-picture.png";
+                using (var imageStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                {
+                    var formFile = new FormFile(imageStream, 0, imageStream.Length, null, Path.GetFileName(imagePath))
+                    {
+                        Headers = new HeaderDictionary(),
+                        ContentType = "image/png"
+                    };
+
+                    var image = await SaveImage(formFile, user.Id.ToString());
+                    user.ImageName = image;
+                }
+
+                _userDbContext.Users.Update(user);
+                _userDbContext.SaveChanges();
             }
 
-            var token = GenerateJwtToken(user);
+            _userDbContext.Users.Update(user);
+            _userDbContext.SaveChanges();
 
-            HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:3000");
-            HttpContext.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+            EmailInfo emailInfo = new EmailInfo()
+            {
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                UserType = user.UserType.ToString(),
+                Id = user.Id
+            };
 
-            return Ok(new { token });
+            var emailServiceProxy = ServiceProxy.Create<IEmailInterface>(
+                new Uri("fabric:/TaxiApplication/EmailService")
+            );
+
+            var emailSent = await emailServiceProxy.UserRegistrationEmail(emailInfo);
+
+            var jwt = GenerateJwtToken(user);
+
+            return Ok(new
+            {
+                jwt,
+                imagePath = user.ImageName
+            });
         }
 
-        
+
+
+
+
+
+
+
+
         private string GenerateJwtToken(User user)
         {
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] ?? string.Empty);

@@ -54,6 +54,7 @@ const Dashboard: React.FC = () => {
   const fetchUserData = useCallback(async () => {
     try {
       const token = localStorage.getItem("jwtToken");
+      console.log(token);
       if (!token) {
         navigate("/login");
         return;

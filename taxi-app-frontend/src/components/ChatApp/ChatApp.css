@@ -2,7 +2,7 @@
   position: fixed;
   border-radius: 10px 10px 0px 0px;
   margin-right: 2px;
-  margin-bottom: 60px;
+  margin-bottom: 175px;
   bottom: 0;
   right: 0;
   width: 580px;
@@ -43,4 +43,25 @@
 
 .chat-room-input {
   margin-top: 10px;
+}
+
+.chat-room-body {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.chat-room-footer {
+  position: fixed;
+  bottom: 60px;
+  width: 615px;
+  margin-left: -15px;
+  background-color: #18364d;
+}
+
+.chat-room-input {
+  margin-top: 10px;
+}
+
+.message-container-wrapper {
+  margin-bottom: 60px; /* Add margin to make space for the fixed footer */
 }

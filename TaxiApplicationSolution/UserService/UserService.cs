@@ -6,12 +6,26 @@ using Microsoft.EntityFrameworkCore;
 using UserService.Database;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.DependencyInjection;
+using Google.Apis.Auth;
 
 namespace UserService
 {
+    public static class GoogleTokenValidator
+    {
+        public static async Task<GoogleJsonWebSignature.Payload> ValidateAsync(string token, string googleClientId)
+        {
+            var settings = new GoogleJsonWebSignature.ValidationSettings()
+            {
+                Audience = new[] { googleClientId }
+            };
+
+            var payload = await GoogleJsonWebSignature.ValidateAsync(token, settings);
+            return payload;
+        }
+    }
+
     internal sealed class UserService : StatelessService
     {
         public UserService(StatelessServiceContext context)
@@ -34,13 +48,11 @@ namespace UserService
                         builder.Services.AddEndpointsApiExplorer();
                         builder.Services.AddSwaggerGen();
 
-                        // Register UserDbContext and other services
                         builder.Services.AddDbContext<UserDbContext>(options =>
                             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
                         builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
-                        // Add CORS policy
                         builder.Services.AddCors(options =>
                         {
                             options.AddPolicy("AllowSpecificOrigin",
@@ -51,7 +63,6 @@ namespace UserService
                                     .AllowCredentials());
                         });
 
-                        // JWT Authentication
                         var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
                         builder.Services.AddAuthentication(options =>
                         {
@@ -69,14 +80,8 @@ namespace UserService
                                 ValidateIssuer = false,
                                 ValidateAudience = false
                             };
-                        })
-                        .AddGoogle(options =>
-                        {
-                            options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-                            options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
                         });
 
-                        // Ensure that WebRootPath is set correctly
                         if (string.IsNullOrEmpty(builder.Environment.WebRootPath))
                         {
                             builder.Environment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
@@ -96,8 +101,14 @@ namespace UserService
                             app.UseSwaggerUI();
                         }
 
-                        // Ensure the correct order of middleware
                         app.UseCors("AllowSpecificOrigin");
+
+                        app.Use(async (context, next) =>
+                        {
+                            context.Response.Headers.Add("Cross-Origin-Opener-Policy", "same-origin");
+                            context.Response.Headers.Add("Cross-Origin-Embedder-Policy", "require-corp");
+                            await next();
+                        });
 
                         app.UseAuthentication();
                         app.UseAuthorization();

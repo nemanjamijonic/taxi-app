@@ -3,11 +3,7 @@ import { useForm } from "react-hook-form";
 import axiosInstance from "../../axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import {
-  GoogleOAuthProvider,
-  GoogleLogin,
-  CredentialResponse,
-} from "@react-oauth/google";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import "./Register.css";
 
 type RegisterFormInputs = {
@@ -69,133 +65,140 @@ const Register: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = async (response: CredentialResponse) => {
-    if (response.credential) {
-      try {
-        const res = await axiosInstance.post(
-          `${process.env.REACT_APP_BACKEND_URL_AUTH_API}/google-login`,
-          { token: response.credential },
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-        const { token } = res.data;
-        localStorage.setItem("jwtToken", token);
-        navigate("/dashboard");
-      } catch (error) {
-        console.error(error);
-      }
+  const onGoogleSuccess = async (credentialResponse: any) => {
+    console.log("Google Success Response: ", credentialResponse); // Log the response
+    try {
+      const res = await axiosInstance.post(
+        `${process.env.REACT_APP_BACKEND_URL_AUTH_API}/google-login`,
+        { token: credentialResponse.credential }, // Make sure we are sending 'token' as expected by backend
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const { token, imagePath } = res.data;
+      localStorage.setItem("jwtToken", token);
+      localStorage.setItem("imagePath", imagePath);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Google Login Error: ", error); // Log the error
     }
   };
 
   return (
-    <div className="register-container">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="register-form"
-        encType="multipart/form-data"
-      >
-        <h2 className="form-title">Register</h2>
-        <div className="form-group">
-          <label>Username</label>
-          <input type="text" {...register("username", { required: true })} />
-          {errors.username && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Email</label>
-          <input type="email" {...register("email", { required: true })} />
-          {errors.email && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            {...register("password", { required: true })}
-          />
-          {errors.password && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            {...register("confirmPassword", { required: true })}
-          />
-          {errors.confirmPassword && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>First Name</label>
-          <input type="text" {...register("firstName", { required: true })} />
-          {errors.firstName && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Last Name</label>
-          <input type="text" {...register("lastName", { required: true })} />
-          {errors.lastName && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Date of Birth</label>
-          <input type="date" {...register("dateOfBirth", { required: true })} />
-          {errors.dateOfBirth && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Address</label>
-          <input type="text" {...register("address", { required: true })} />
-          {errors.address && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>User Type</label>
-          <select
-            className="form-group-select"
-            {...register("userType", { required: true })}
-          >
-            <option value="User">User</option>
-            <option value="Driver">Driver</option>
-          </select>
-          {errors.userType && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <div className="form-group">
-          <label>User Image</label>
-          <input type="file" {...register("imageFile", { required: true })} />
-          {errors.imageFile && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-        <button type="submit" className="btn button-register">
-          Register
-        </button>
-        <div className="google-login">
-          <GoogleOAuthProvider clientId="1060472910731-36b4gj3k7hknmjinifkd5apo3clvknad.apps.googleusercontent.com">
+    <GoogleOAuthProvider
+      clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ""}
+    >
+      <div className="register-container">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="register-form"
+          encType="multipart/form-data"
+        >
+          <h2 className="form-title">Register</h2>
+          <div className="form-group">
+            <label>Username</label>
+            <input type="text" {...register("username", { required: true })} />
+            {errors.username && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Email</label>
+            <input type="email" {...register("email", { required: true })} />
+            {errors.email && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              {...register("password", { required: true })}
+            />
+            {errors.password && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              {...register("confirmPassword", { required: true })}
+            />
+            {errors.confirmPassword && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>First Name</label>
+            <input type="text" {...register("firstName", { required: true })} />
+            {errors.firstName && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Last Name</label>
+            <input type="text" {...register("lastName", { required: true })} />
+            {errors.lastName && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Date of Birth</label>
+            <input
+              type="date"
+              {...register("dateOfBirth", { required: true })}
+            />
+            {errors.dateOfBirth && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Address</label>
+            <input type="text" {...register("address", { required: true })} />
+            {errors.address && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>User Type</label>
+            <select
+              className="form-group-select"
+              {...register("userType", { required: true })}
+            >
+              <option value="User">User</option>
+              <option value="Driver">Driver</option>
+            </select>
+            {errors.userType && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <div className="form-group">
+            <label>User Image</label>
+            <input type="file" {...register("imageFile", { required: true })} />
+            {errors.imageFile && (
+              <span className="error">This field is required</span>
+            )}
+          </div>
+          <button type="submit" className="btn button-register">
+            Register
+          </button>
+          <div className="google-login">
             <GoogleLogin
-              onSuccess={handleGoogleLogin}
+              onSuccess={onGoogleSuccess}
               onError={() => {
                 console.log("Login Failed");
               }}
             />
-          </GoogleOAuthProvider>
-        </div>
-        <div className="links">
-          <Link to="/login">Already have an account? Login</Link>
-        </div>
-      </form>
-    </div>
+          </div>
+          <div className="links">
+            <Link to="/login">Already have an account? Login</Link>
+          </div>
+        </form>
+      </div>
+    </GoogleOAuthProvider>
   );
 };
 
