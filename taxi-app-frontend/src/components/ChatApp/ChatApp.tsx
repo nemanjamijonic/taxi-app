@@ -11,15 +11,12 @@ interface Message {
 
 interface ChatAppProps {
   username: string;
-  role: string;
   chatroom: string;
 }
 
-const ChatApp: React.FC<ChatAppProps> = ({ username, role, chatroom }) => {
+const ChatApp: React.FC<ChatAppProps> = ({ username, chatroom }) => {
   const [conn, setConnection] = useState<HubConnection | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-
-  console.log(role);
 
   const sendMessage = async (message: string) => {
     try {

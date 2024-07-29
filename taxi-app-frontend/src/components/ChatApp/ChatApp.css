@@ -2,7 +2,7 @@
   position: fixed;
   border-radius: 10px 10px 0px 0px;
   margin-right: 2px;
-  margin-bottom: 175px;
+  margin-bottom: 185px;
   bottom: 0;
   right: 0;
   width: 580px;
@@ -13,6 +13,8 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   padding: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
 .green-message {
@@ -28,8 +30,10 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #ccc;
-  margin-bottom: 60px;
+  margin-bottom: 10px;
   padding-bottom: 5px;
+  background-color: #204060;
+  color: #fff;
 }
 
 .chat-room-header h2 {
@@ -39,10 +43,9 @@
 .chat-room-messages {
   flex-grow: 1;
   overflow-y: auto;
-}
-
-.chat-room-input {
-  margin-top: 10px;
+  padding: 10px;
+  background-color: #18364d;
+  color: #fff;
 }
 
 .chat-room-body {
@@ -50,18 +53,25 @@
   overflow-y: auto;
 }
 
+.message-container-wrapper {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 10px; /* Add margin to make space for the fixed footer */
+}
+
 .chat-room-footer {
+  margin-left: -15px;
   position: fixed;
   bottom: 60px;
-  width: 615px;
-  margin-left: -15px;
-  background-color: #18364d;
+  width: 600px;
+  background-color: #204060;
+  padding: 10px;
+  color: #fff;
 }
 
 .chat-room-input {
+  display: flex;
+  width: 100%;
   margin-top: 10px;
-}
-
-.message-container-wrapper {
-  margin-bottom: 60px; /* Add margin to make space for the fixed footer */
 }

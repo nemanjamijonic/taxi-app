@@ -13,6 +13,8 @@ type DriveItemProps = {
   createdAt: string;
   userUsername: string;
   driverUsername: string;
+  driveDistance: number;
+  driverArrivalTime: number;
   aproximatedTime: number;
   aproximatedCost: number;
   driveState: string;
@@ -23,6 +25,7 @@ const DriveList: React.FC = () => {
   const [drives, setDrives] = useState<DriveItemProps[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [username, setUsername] = useState("");
+  const [UserState, setUserState] = useState("");
   const [userType, setUserType] = useState("");
   const [userImage, setUserImage] = useState("");
   const navigate = useNavigate();
@@ -50,6 +53,9 @@ const DriveList: React.FC = () => {
         );
 
         const userData = userResponse.data;
+        console.log("Userstate in drivelist: " + userResponse.data);
+        setUserState(userData.userState);
+        console.log("Userstate in drivelist: " + UserState);
         setUsername(userData.username);
         setUserType(userData.userType);
         setUserImage(
@@ -116,14 +122,14 @@ const DriveList: React.FC = () => {
     }
   };
 
-  const handleCreateOffer = async (driveId: string) => {
+  const handleCreateOffer = async (driveId: string, arrivalTime: number) => {
     try {
       const token = localStorage.getItem("jwtToken");
       const driverUsername = username; // assuming `username` state holds the driver's username
 
       await axios.post(
         `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/create-offer/${driveId}`,
-        { DriverUsername: driverUsername }, // include DriverUsername in the request body
+        { DriverUsername: driverUsername, DriverArrivalTime: arrivalTime }, // include DriverUsername and DriverArrivalTime in the request body
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -177,11 +183,15 @@ const DriveList: React.FC = () => {
               driverUsername={drive.driverUsername}
               aproximatedTime={drive.aproximatedTime}
               aproximatedCost={drive.aproximatedCost}
+              driveDistance={drive.driveDistance}
               driveState={drive.driveState}
+              driverArrivalTime={drive.driverArrivalTime}
               userType={"2"}
-              userState={username}
+              userState={UserState}
               onAcceptDrive={() => handleAcceptDrive(drive.id)}
-              onCreateOffer={() => handleCreateOffer(drive.id)}
+              onCreateOffer={(arrivalTime) =>
+                handleCreateOffer(drive.id, arrivalTime)
+              } // Pass arrivalTime to handleCreateOffer
             />
           ))
         )}

@@ -15,22 +15,16 @@ const SendMessageForm: React.FC<SendMessageFormProps> = ({ sendMessage }) => {
   };
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      style={{
-        borderRadius: "10px",
-        padding: "10px",
-        backgroundColor: "#3f4b54",
-      }}
-    >
-      <InputGroup className="mb-3">
+    <Form onSubmit={handleSubmit} className="chat-room-input">
+      <InputGroup>
         <Form.Control
+          style={{ width: "550px" }}
           onChange={(e) => setMessage(e.target.value)}
           value={msg}
           placeholder="Enter a message"
         />
         <Button
-          style={{ color: "white", backgroundColor: "#40a8ff" }}
+          style={{ color: "white", backgroundColor: "#40a8ff", width: "550px" }}
           type="submit"
           disabled={!msg}
         >

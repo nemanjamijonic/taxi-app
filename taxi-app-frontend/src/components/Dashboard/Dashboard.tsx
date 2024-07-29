@@ -19,10 +19,13 @@ type Drive = {
   startingAddress: string;
   endingAddress: string;
   createdAt: string;
+  userId: string;
   userUsername: string;
+  driverArrivalTime: number;
   driverUsername: string;
   aproximatedTime: number;
   aproximatedCost: number;
+  driveDistance: number;
   driveState: string;
 };
 
@@ -71,6 +74,7 @@ const Dashboard: React.FC = () => {
           },
         }
       );
+      console.log(userResponse.data);
       setUserState(userResponse.data.userState);
       const userData = userResponse.data;
       setUsername(userData.username);
@@ -92,8 +96,11 @@ const Dashboard: React.FC = () => {
       });
 
       setUserDrive(driveResponse.data);
+      console.log(
+        "Drive response distance: " + driveResponse.data.driveDistance
+      );
       if (driveResponse.data.driveState == "2") {
-        setTimeLeft(driveResponse.data.aproximatedTime);
+        setRideTimeLeft(driveResponse.data.aproximatedTime);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -127,7 +134,7 @@ const Dashboard: React.FC = () => {
             }
           )
           .then(() => {
-            setRideTimeLeft(10);
+            setTimeLeft(10);
             fetchUserData();
           })
           .catch((error) =>
@@ -249,54 +256,16 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const joinChatRoom = async () => {
-    try {
-      const connection = new HubConnectionBuilder()
-        .withUrl("https://localhost:8275/chat")
-        .configureLogging(LogLevel.Information)
-        .build();
-
-      connection.on("JoinSpecificChatRoom", (admin, msg) => {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { username: admin, msg },
-        ]);
-      });
-
-      connection.on("ReceiveSpecificMessage", (username, msg) => {
-        setMessages((prevMessages) => [...prevMessages, { username, msg }]);
-      });
-
-      await connection.start();
-      await connection.invoke("JoinSpecificChatRoom", {
-        userName: username,
-        chatRoom: userDrive?.id,
-      });
-      setConnection(connection);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const sendMessage = async (message: string) => {
-    try {
-      if (conn) {
-        await conn.invoke("SendMessage", message);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  useEffect(() => {
-    if (timeLeft !== 0) {
-      joinChatRoom();
-    }
-  }, [timeLeft]);
-
   useEffect(() => {
     // Kontrola vidljivosti chata
-    if (timeLeft != 0 && userDrive) {
+    console.log(userDrive?.driveState);
+    if (
+      timeLeft != 0 &&
+      userDrive &&
+      (userDrive.driveState == "2" ||
+        userDrive.driveState == "4" ||
+        userDrive.driveState == "5")
+    ) {
       setIsChatVisible(true);
     } else if (rideTimeLeft !== null && rideTimeLeft > 0) {
       setIsChatVisible(true);
@@ -323,10 +292,22 @@ const Dashboard: React.FC = () => {
       />
       <div className="dashboard-container">
         <h1>
-          Welcome to Dashboard, <b>{email}</b>
+          Welcome to Dashboard, <b>{username}</b>
         </h1>
         <p>
           <strong>User Type:</strong> {userType == "1" ? "User" : "Driver"}
+        </p>
+        <p>
+          <strong>User Status:</strong>{" "}
+          {userState == "0"
+            ? "Created"
+            : userState == "1"
+            ? "Verified"
+            : userState == "2"
+            ? "Rejected"
+            : userState == "3"
+            ? "Blocked"
+            : "Unknown"}
         </p>
 
         {userDrive ? (
@@ -351,6 +332,8 @@ const Dashboard: React.FC = () => {
               driverUsername={userDrive.driverUsername}
               aproximatedTime={userDrive.aproximatedTime}
               aproximatedCost={userDrive.aproximatedCost}
+              driverArrivalTime={userDrive.driverArrivalTime}
+              driveDistance={userDrive.driveDistance}
               driveState={userDrive.driveState}
               userType={userType}
               userState={userState}
@@ -376,7 +359,7 @@ const Dashboard: React.FC = () => {
                 count={5}
                 onChange={(value: number) => setCurrentRating(value)}
                 size={24}
-                activeColor="#ffd700"
+                activeColor="red"
                 value={currentRating || 0}
               />
               <CButton
@@ -398,11 +381,7 @@ const Dashboard: React.FC = () => {
         )}
 
         {isChatVisible && userDrive && (
-          <ChatApp
-            role={userType}
-            username={username}
-            chatroom={userDrive.id}
-          />
+          <ChatApp username={username} chatroom={userDrive.id} />
         )}
       </div>
     </div>

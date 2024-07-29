@@ -9,7 +9,7 @@ namespace Common.Interfaces
 {
     public interface ICalculationInterface : IService
     {
-        Task<double> EstimateTime();
-        Task<double> EstimatePrice();
+        Task<double> EstimateTime(int driveTime);
+        Task<double> EstimatePrice(double distance);
     }
 }

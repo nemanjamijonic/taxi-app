@@ -13,6 +13,8 @@ type Drive = {
   createdAt: string;
   userUsername: string;
   driverUsername: string;
+  driverArrivalTime: number;
+  driveDistance: number;
   aproximatedTime: number;
   aproximatedCost: number;
   driveState: string;
@@ -101,8 +103,10 @@ const UserDrives: React.FC = () => {
                 endingAddress={drive.endingAddress}
                 createdAt={drive.createdAt}
                 userUsername={drive.userUsername}
+                driverArrivalTime={drive.driverArrivalTime}
                 driverUsername={drive.driverUsername}
                 aproximatedTime={drive.aproximatedTime}
+                driveDistance={drive.driveDistance}
                 aproximatedCost={drive.aproximatedCost}
                 driveState={drive.driveState}
                 userState={drive.driveState}

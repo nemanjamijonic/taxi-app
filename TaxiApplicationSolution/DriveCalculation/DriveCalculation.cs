@@ -25,19 +25,22 @@ namespace DriveCalculation
         { }
 
 
-        public Task<double> EstimateTime()
+        public Task<double> EstimateTime(int driveTime)
         {
             // Generate a random time between 60 and 120 seconds
-            double estimatedTimeSeconds = RandomGenerator.Next(9, 21);
+            double estimatedTimeSeconds = driveTime * 60/60;
             return Task.FromResult(estimatedTimeSeconds);
         }
 
-        public Task<double> EstimatePrice()
+        public Task<double> EstimatePrice(double distance)
         {
-            // Generate a random price between 500 and 1000 dinars
-            double estimatedPrice = RandomGenerator.Next(500, 1001);
+            double basePrice = 100; // Početna cena
+            double pricePerKilometer = 65; // Cena po kilometru
+
+            double estimatedPrice = basePrice + (distance * pricePerKilometer / 1000);
             return Task.FromResult(estimatedPrice);
         }
+
 
         /// <summary>
         /// Optional override to create listeners (e.g., HTTP, Service Remoting, WCF, etc.) for this service replica to handle client or user requests.

@@ -14,21 +14,18 @@ interface ChatRoomProps {
 }
 
 const ChatRoom: React.FC<ChatRoomProps> = ({ messages, sendMessage }) => (
-  <div>
-    <Row className="px-5 py-5">
-      <Col sm={10}>
-        <h1 style={{ color: "#6c7e8c" }}>Chat Room</h1>
-      </Col>
-    </Row>
-    <Row className="px-5 py-5">
-      <Col sm={12}>
+  <div className="chat-room-container">
+    <div className="chat-room-header">
+      <h2>Chat Room</h2>
+    </div>
+    <div className="chat-room-body">
+      <div className="message-container-wrapper">
         <MessageContainer messages={messages} />
-      </Col>
-      <br></br>
-      <Col sm={12} className="chat-room-footer">
+      </div>
+      <div className="chat-room-footer">
         <SendMessageForm sendMessage={sendMessage} />
-      </Col>
-    </Row>
+      </div>
+    </div>
   </div>
 );
 

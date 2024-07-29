@@ -33,6 +33,12 @@ namespace DriveService.Database.Configurations
             builder.Property(d => d.AproximatedCost)
                 .IsRequired();
 
+            builder.Property<int>(d => d.DriverArrivalTime)
+                .IsRequired();
+
+            builder.Property(d => d.DriveDistance)
+                .IsRequired();
+
             builder.Property(d => d.CreatedAt)
                 .IsRequired();
 

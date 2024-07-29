@@ -53,7 +53,7 @@ const Register: React.FC = () => {
         }
       );
       if (response.status === 201) {
-        navigate("/login"); // Redirect to login if status is 201 (Driver)
+        navigate("/dashboard"); // Redirect to dashboard if status is 201 (Driver)
       } else {
         const { token, imagePath } = response.data;
         localStorage.setItem("jwtToken", token);

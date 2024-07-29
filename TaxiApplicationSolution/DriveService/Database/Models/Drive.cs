@@ -11,6 +11,9 @@ namespace DriveService.Database.Models
         public string DriverUsername { get; set; }
         public double AproximatedTime { get; set; }
         public double AproximatedCost { get; set; }
+        public int DriverArrivalTime { get; set; }
+        public double DriveDistance { get; set; }
+        public int RouteIndex { get; set; }
         public DateTime CreatedAt { get; set; }
         public DriveState DriveState { get; set; }
         public string StartingAddress { get; set; }

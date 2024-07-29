@@ -64,9 +64,7 @@ namespace UserService.Controllers
             {
                 return Unauthorized(new { message = "Invalid email or password" });
             }
-            if (user.UserType == UserType.Driver && user.UserState == UserState.Created) {
-                return Unauthorized(new { message = "You have to wait Admins Verify." });
-            }
+            
             var token = GenerateJwtToken(user);
             return Ok(new { token });
         }
@@ -95,7 +93,7 @@ namespace UserService.Controllers
                 LastName = registerDto.LastName,
                 UserState = UserState.Created,
                 IsDeleted = false,
-                CreatedAt = DateTime.UtcNow.AddHours(2),
+                CreatedAt = DateTime.UtcNow,
                 DateOfBirth = registerDto.DateOfBirth.Date,
                 Address = registerDto.Address,
             };
@@ -147,10 +145,7 @@ namespace UserService.Controllers
 
             var emailSent = await emailServiceProxy.UserRegistrationEmail(emailInfo);
 
-            if (user.UserType == UserType.Driver)
-            {
-                return StatusCode(201); // Return 201 Created status for drivers
-            }
+            
 
             var token = GenerateJwtToken(user);
 

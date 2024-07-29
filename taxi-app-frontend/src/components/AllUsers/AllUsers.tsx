@@ -54,6 +54,7 @@ const AllUsers: React.FC = () => {
           const decodedToken = jwtDecode<DecodedToken>(token);
           setUsername(decodedToken.unique_name);
           const role = decodedToken.role;
+          console.log(role);
           if (role == "Admin") {
             setUserType("0");
           }

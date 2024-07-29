@@ -34,7 +34,7 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ messages }) => {
                       display: "block",
                       textAlign: "right",
                       marginTop: "5px",
-                      fontSize: "0.9em",
+                      fontSize: "0.9rem",
                       color: "gray",
                       fontWeight: "normal",
                     }}

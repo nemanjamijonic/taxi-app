@@ -154,28 +154,49 @@ namespace DriveService.Controllers
                 return BadRequest("Drive data is null");
             }
 
-            var usersDrives = _context.Drives.Where(d => d.UserId == userId);
-            foreach (var usersDrive in usersDrives) 
-            {
-                if (usersDrive.DriveState == DriveState.UserOrderedDrive ||
-                    usersDrive.DriveState == DriveState.DriverCreatedOffer ||
-                    usersDrive.DriveState == DriveState.UserAceptedDrive ||
-                    usersDrive.DriveState == DriveState.DriveActive) 
+
+            var userDrives = _context.Drives.Where(dr => dr.UserId == userId);
+            var driveCount = userDrives.Count();
+
+            if (driveCount != 0) { 
+                var usersDrives = _context.Drives.Where(d => d.UserId == userId);
+                foreach (var usersDrive in usersDrives) 
                 {
-                    return Conflict("You already have unfinished drives!");
+                    if (usersDrive.DriveState == DriveState.UserOrderedDrive ||
+                        usersDrive.DriveState == DriveState.DriverCreatedOffer ||
+                        usersDrive.DriveState == DriveState.UserAceptedDrive ||
+                        usersDrive.DriveState == DriveState.DriveActive) 
+                    {
+                        return Conflict("You already have unfinished drives!");
+                    }
                 }
             }
+
 
             Drive drive = new Drive()
             {
                 StartingAddress = createDriveDto.StartingAddress,
                 EndingAddress = createDriveDto.EndingAddress,
-                CreatedAt = DateTime.Now.AddHours(2),
+                CreatedAt = DateTime.UtcNow,
                 UserUsername = createDriveDto.UserUsername,
                 DriverUsername = "",
+                RouteIndex = createDriveDto.RouteIndex,
+                DriveDistance = createDriveDto.Distance,
                 DriveState = DriveState.UserOrderedDrive,
                 UserId = Guid.Parse(userId.ToString())
             };
+
+            ServicePartitionKey partition = new ServicePartitionKey(long.Parse("1"));
+            var statefulProxy = ServiceProxy.Create<ICalculationInterface>(
+                new Uri("fabric:/TaxiApplication/DriveCalculation"),
+                partition
+            );
+
+            var estimatedCost = await statefulProxy.EstimatePrice(createDriveDto.Distance);
+            var estimatedTime = await statefulProxy.EstimateTime(createDriveDto.DriveTime);
+
+            drive.AproximatedTime = estimatedTime;
+            drive.AproximatedCost = estimatedCost;
 
             _context.Drives.Add(drive);
             await _context.SaveChangesAsync();
@@ -211,18 +232,9 @@ namespace DriveService.Controllers
                 return NotFound();
             }
 
-            ServicePartitionKey partition = new ServicePartitionKey(long.Parse("1"));
-            var statefulProxy = ServiceProxy.Create<ICalculationInterface>(
-                new Uri("fabric:/TaxiApplication/DriveCalculation"),
-                partition
-            );  
 
-            var estimatedTime = await statefulProxy.EstimateTime();
-            var estimatedCost = await statefulProxy.EstimatePrice();
-
-            drive.AproximatedCost = estimatedCost;
-            drive.AproximatedTime = estimatedTime;
             drive.DriverId = userId;
+            drive.DriverArrivalTime = createOfferDto.DriverArrivalTime;
             drive.DriverUsername = createOfferDto.DriverUsername; // use the provided DriverUsername
             drive.DriveState = DriveState.DriverCreatedOffer;
 

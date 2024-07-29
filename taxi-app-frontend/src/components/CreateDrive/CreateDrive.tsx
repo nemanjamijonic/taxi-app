@@ -58,14 +58,12 @@ const geocodeAddress = async (
       )}&key=${apiKey}`
     );
 
-
     if (response.data.status !== "OK") {
       console.error("Geocoding API error:", response.data.status);
       return null;
     }
 
     const results = response.data.results;
-
 
     if (results.length > 0) {
       const location = results[0].geometry.location;
@@ -106,7 +104,6 @@ export default function CreateDrive() {
   const [userImage, setUserImage] = useState<string>("");
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
-
   const position = { lat: 45.254, lng: 19.852 };
 
   const navigate = useNavigate();
@@ -219,10 +216,33 @@ export default function CreateDrive() {
       const decodedToken: JwtPayload = jwtDecode(token);
       const username = decodedToken.unique_name;
 
+      // Čitanje podataka iz lokalnog skladišta
+      const driveDistance = localStorage.getItem("driveDistance");
+      const driveTime = localStorage.getItem("driveTime");
+      const routeIndex = localStorage.getItem("selectedRouteIndex");
+
+      if (!driveDistance || !driveTime || !routeIndex) {
+        setError("Drive data not available");
+        return;
+      }
+
+      // Pretvaranje vrednosti u brojeve
+      const driveDistanceValue = parseFloat(driveDistance);
+      const driveTimeValue = parseFloat(driveTime);
+      const routeIndexValue = parseInt(routeIndex);
+
+      // Brisanje podataka iz lokalnog skladišta
+      localStorage.removeItem("driveDistance");
+      localStorage.removeItem("driveTime");
+      localStorage.removeItem("selectedRouteIndex");
+
       const driveData = {
         UserUsername: username,
         StartingAddress: address1,
         EndingAddress: address2,
+        RouteIndex: routeIndexValue,
+        Distance: driveDistanceValue,
+        DriveTime: driveTimeValue,
       };
 
       const response = await axios.post(
@@ -350,34 +370,50 @@ function Directions({
   const selected = routes[routeIndex];
   const leg = selected?.legs[0];
 
-
   useEffect(() => {
-    if (!routesLibrary || !map) return;
-    setDirectionService(new routesLibrary.DirectionsService());
-    setDirectionsRendered(new routesLibrary.DirectionsRenderer({ map }));
+    if (routesLibrary && map) {
+      setDirectionService(new routesLibrary.DirectionsService());
+      setDirectionsRendered(new routesLibrary.DirectionsRenderer({ map }));
+    }
   }, [routesLibrary, map]);
 
   useEffect(() => {
-    if (!directionService || !directionsRendered) return;
-    if (!address1 || !address2) return;
-
-    directionService
-      .route({
-        origin: address1,
-        destination: address2,
-        travelMode: google.maps.TravelMode.DRIVING,
-        provideRouteAlternatives: true,
-      })
-      .then((response) => {
-        directionsRendered.setDirections(response);
-        setRoutes(response.routes);
-      });
+    if (directionService && directionsRendered && address1 && address2) {
+      directionService
+        .route({
+          origin: address1,
+          destination: address2,
+          travelMode: google.maps.TravelMode.DRIVING,
+          provideRouteAlternatives: true,
+        })
+        .then((response) => {
+          directionsRendered.setDirections(response);
+          setRoutes(response.routes);
+        });
+    }
   }, [directionService, directionsRendered, address1, address2]);
 
   useEffect(() => {
-    if (!directionsRendered) return;
-    directionsRendered.setRouteIndex(routeIndex);
+    if (directionsRendered) {
+      console.log("Route index: " + routeIndex);
+      localStorage.setItem("selectedRouteIndex", routeIndex.toString());
+      directionsRendered.setRouteIndex(routeIndex);
+    }
   }, [routeIndex, directionsRendered]);
+
+  useEffect(() => {
+    if (leg) {
+      const distance = leg.distance?.value ?? 0;
+      const duration = leg.duration?.value ?? 0;
+      localStorage.setItem("driveDistance", distance.toString());
+      localStorage.setItem("driveTime", duration.toString());
+    }
+  }, [leg]);
+
+  const handleRouteSelection = (index: number) => {
+    setRouteIndex(index);
+    localStorage.setItem("selectedRouteIndex", index.toString());
+  };
 
   if (!leg) return null;
 
@@ -408,7 +444,7 @@ function Directions({
         {routes.map((route, index) => (
           <li key={route.summary} className="route-item">
             <button
-              onClick={() => setRouteIndex(index)}
+              onClick={() => handleRouteSelection(index)}
               className="route-button"
             >
               {route.summary}
