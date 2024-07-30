@@ -30,13 +30,34 @@ p {
 }
 
 .rating-form {
-  color: red;
-  width: 350px;
+  color: #333;
+  width: 100%;
   max-width: 350px;
-  border: 1px solid;
-  border-radius: 20px;
+  padding: 20px;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.rating-form-submit {
-  width: 80%;
+.rating-form-title {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.rating-stars-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.rating-reset-button,
+.rating-submit-button {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  text-align: center;
 }

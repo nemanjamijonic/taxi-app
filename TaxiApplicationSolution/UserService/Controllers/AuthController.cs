@@ -196,7 +196,7 @@ namespace UserService.Controllers
                     UserState = userState,
                     Username = payload.Name,
                     UserType = UserType.User,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.Now,
                     Address = "",
                     IsDeleted = false,
                     PasswordHash = hashedPassword,

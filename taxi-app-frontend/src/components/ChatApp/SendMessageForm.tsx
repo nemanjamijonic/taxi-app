@@ -24,7 +24,7 @@ const SendMessageForm: React.FC<SendMessageFormProps> = ({ sendMessage }) => {
           placeholder="Enter a message"
         />
         <Button
-          style={{ color: "white", backgroundColor: "#40a8ff", width: "550px" }}
+          style={{ color: "white", backgroundColor: "#40a8ff", width: "580px" }}
           type="submit"
           disabled={!msg}
         >

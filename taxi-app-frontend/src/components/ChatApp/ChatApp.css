@@ -2,13 +2,12 @@
   position: fixed;
   border-radius: 10px 10px 0px 0px;
   margin-right: 2px;
-  margin-bottom: 185px;
+  margin-bottom: 175px;
   bottom: 0;
   right: 0;
   width: 580px;
   max-height: 400px;
   overflow-y: auto;
-  border: 1px solid #ccc;
   background-color: #18364d;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
@@ -32,7 +31,7 @@
   border-bottom: 1px solid #ccc;
   margin-bottom: 10px;
   padding-bottom: 5px;
-  background-color: #204060;
+  background-color: #18364d;
   color: #fff;
 }
 
@@ -65,13 +64,13 @@
   position: fixed;
   bottom: 60px;
   width: 600px;
-  background-color: #204060;
+  background-color: #18364d;
   padding: 10px;
   color: #fff;
 }
 
 .chat-room-input {
   display: flex;
+  background-color: #18364d;
   width: 100%;
-  margin-top: 10px;
 }

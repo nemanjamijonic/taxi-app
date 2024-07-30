@@ -97,6 +97,7 @@ const AllDrives: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("jwtToken");
+    localStorage.removeItem("imagePath");
     window.location.href = "/login";
   };
 

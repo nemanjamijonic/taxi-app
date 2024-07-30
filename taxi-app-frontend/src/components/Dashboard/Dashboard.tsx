@@ -7,11 +7,7 @@ import DriveItem from "../DriveItem/DriveItem";
 import "./Dashboard.css";
 import ReactStars from "react-rating-stars-component";
 import { CButton } from "@coreui/react";
-import {
-  HubConnection,
-  HubConnectionBuilder,
-  LogLevel,
-} from "@microsoft/signalr";
+import { HubConnection } from "@microsoft/signalr";
 import ChatApp from "../ChatApp/ChatApp";
 
 type Drive = {
@@ -100,7 +96,7 @@ const Dashboard: React.FC = () => {
         "Drive response distance: " + driveResponse.data.driveDistance
       );
       if (driveResponse.data.driveState == "2") {
-        setRideTimeLeft(driveResponse.data.aproximatedTime);
+        setTimeLeft(driveResponse.data.driverArrivalTime);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -134,7 +130,7 @@ const Dashboard: React.FC = () => {
             }
           )
           .then(() => {
-            setTimeLeft(10);
+            setRideTimeLeft(userDrive.aproximatedTime);
             fetchUserData();
           })
           .catch((error) =>
@@ -310,7 +306,7 @@ const Dashboard: React.FC = () => {
             : "Unknown"}
         </p>
 
-        {userDrive ? (
+        {userDrive && userDrive.driveState != "5" ? (
           <div>
             <h2>Active Drive</h2>
             {userDrive.driveState == "2" && timeLeft !== null && (
@@ -353,26 +349,28 @@ const Dashboard: React.FC = () => {
 
         {showRatingForm && userDrive && userType == "1" && (
           <div className="rating-form">
-            <p>Rate the driver: {userDrive.driverUsername}</p>
-            <div className="d-flex align-items-center">
+            <p className="rating-form-title">
+              Rate the driver: {userDrive.driverUsername}
+            </p>
+            <div className="rating-stars-container">
               <ReactStars
                 count={5}
                 onChange={(value: number) => setCurrentRating(value)}
                 size={24}
-                activeColor="red"
+                activeColor="#ffd700"
                 value={currentRating || 0}
               />
-              <CButton
-                className="ms-3"
-                color="primary"
-                onClick={() => setCurrentRating(null)}
-              >
-                Reset
-              </CButton>
             </div>
             <CButton
-              color="primary"
-              className="rating-form-submit"
+              className="rating-reset-button"
+              color="danger"
+              onClick={() => setCurrentRating(null)}
+            >
+              Reset
+            </CButton>
+            <CButton
+              color="success"
+              className="rating-submit-button"
               onClick={handleRatingSubmit}
             >
               Submit Rating

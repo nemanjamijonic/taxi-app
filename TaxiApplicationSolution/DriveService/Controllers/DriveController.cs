@@ -232,6 +232,9 @@ namespace DriveService.Controllers
                 return NotFound();
             }
 
+            if (drive.DriveState == DriveState.DriverCreatedOffer) {
+                return Unauthorized(new { message = $"Offer already created by driver:{drive.DriverUsername} ." });
+            }
 
             drive.DriverId = userId;
             drive.DriverArrivalTime = createOfferDto.DriverArrivalTime;
