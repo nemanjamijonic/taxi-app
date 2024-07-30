@@ -2,6 +2,7 @@
   width: 90vw;
   height: 70vh;
   margin-bottom: 100px;
+  position: relative;
 }
 
 .direction-container {

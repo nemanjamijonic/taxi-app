@@ -16,6 +16,8 @@ const Navbar: React.FC<NavbarProps> = ({
   onLogout,
 }) => {
   const navigate = useNavigate();
+  console.log(username);
+  console.log(userType);
   const handleNavigation = (path: string) => {
     navigate(path);
   };
@@ -54,6 +56,9 @@ const Navbar: React.FC<NavbarProps> = ({
             </span>
             <span onClick={() => handleNavigation("/previous-rides")}>
               Previous Drives
+            </span>
+            <span onClick={() => handleNavigation("/favourite-address")}>
+              Favourite Address
             </span>
           </>
         )}

@@ -66,11 +66,12 @@ const Register: React.FC = () => {
   };
 
   const onGoogleSuccess = async (credentialResponse: any) => {
-    console.log("Google Success Response: ", credentialResponse); // Log the response
+    console.log("Google Success Response: ", credentialResponse);
+
     try {
       const res = await axiosInstance.post(
         `${process.env.REACT_APP_BACKEND_URL_AUTH_API}/google-login`,
-        { token: credentialResponse.credential }, // Make sure we are sending 'token' as expected by backend
+        { token: credentialResponse.credential },
         {
           headers: {
             "Content-Type": "application/json",
@@ -80,9 +81,20 @@ const Register: React.FC = () => {
       const { token, imagePath } = res.data;
       localStorage.setItem("jwtToken", token);
       localStorage.setItem("imagePath", imagePath);
+
+      // Proveri da li su token i imagePath postavljeni u localStorage
+      console.log(
+        "JWT Token after Google Login: ",
+        localStorage.getItem("jwtToken")
+      );
+      console.log(
+        "Image Path after Google Login: ",
+        localStorage.getItem("imagePath")
+      );
+
       navigate("/dashboard");
     } catch (error) {
-      console.error("Google Login Error: ", error); // Log the error
+      console.error("Google Login Error: ", error);
     }
   };
 

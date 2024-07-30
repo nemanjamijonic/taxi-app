@@ -1,23 +1,17 @@
 ﻿using Common.Enums;
 using Common.Helpers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using UserService.Database;
+using UserService.Database.Models;
 using UserService.Dto;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Common.Interfaces;
 using Common.Models;
-using System.IO;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Google;
 using Google.Apis.Auth;
+using UserService.Database;
 
 namespace UserService.Controllers
 {
@@ -153,16 +147,10 @@ namespace UserService.Controllers
         }
 
 
-        public class GoogleLoginRequest
-        {
-            public string Token { get; set; }
-        }
-
-
         [HttpPost("google-login")]
-        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDto googleLoginDto)
         {
-            string token = request.Token;
+            string token = googleLoginDto.Token;
             Console.WriteLine($"Received token: {token}");
 
             var googleClientId = _configuration["Authentication:Google:ClientId"];
@@ -186,6 +174,7 @@ namespace UserService.Controllers
             }
 
             var user = _userDbContext.Users.SingleOrDefault(u => u.Email == payload.Email);
+
             if (user == null)
             {
                 user = new User()
@@ -247,18 +236,10 @@ namespace UserService.Controllers
 
             return Ok(new
             {
-                jwt,
+                token = jwt,
                 imagePath = user.ImageName
             });
         }
-
-
-
-
-
-
-
-
 
         private string GenerateJwtToken(User user)
         {

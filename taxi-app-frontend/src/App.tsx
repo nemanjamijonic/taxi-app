@@ -11,6 +11,7 @@ import DriveList from "./components/DriveList/DriveList";
 import AllUsers from "./components/AllUsers/AllUsers";
 import AllDrives from "./components/AllDrives/AllDrives";
 import MyRides from "./components/MyRides/MyRides";
+import FavouriteAddresses from "./components/FavouriteAddresses/FavouriteAddresses";
 
 import "./App.css";
 
@@ -31,6 +32,7 @@ const App: React.FC = () => {
           <Route path="/all-users" element={<AllUsers />} />
           <Route path="/all-drives" element={<AllDrives />} />
           <Route path="/my-rides" element={<MyRides />} />
+          <Route path="/favourite-address" element={<FavouriteAddresses />} />
         </Routes>
       </div>
     </Router>

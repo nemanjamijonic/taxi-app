@@ -122,7 +122,6 @@ namespace UserService.Controllers
         }
 
 
-
         [HttpGet("drivers")]
         public async Task<IActionResult> GetAllActiveDrivers()
         {

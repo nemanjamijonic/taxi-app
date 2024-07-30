@@ -7,10 +7,9 @@ import axios from "axios";
 import {
   APIProvider,
   Map,
-  useMapsLibrary,
-  useMap,
   Marker,
   InfoWindow,
+  AdvancedMarker,
 } from "@vis.gl/react-google-maps";
 import { LoadScript, Autocomplete } from "@react-google-maps/api";
 import Navbar from "../Navbar/Navbar"; // Adjust the import path as necessary
@@ -341,8 +340,8 @@ export default function CreateDrive() {
                   </div>
                 </InfoWindow>
               )}
-              {position1 && <Marker position={position1} />}
-              {position2 && <Marker position={position2} />}
+              {position1 && <AdvancedMarker position={position1} />}
+              {position2 && <AdvancedMarker position={position2} />}
 
               <Directions address1={address1} address2={address2}></Directions>
             </Map>

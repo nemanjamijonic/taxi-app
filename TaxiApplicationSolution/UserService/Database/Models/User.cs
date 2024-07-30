@@ -1,7 +1,6 @@
 ﻿using Common.Enums;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace UserService.Database
+namespace UserService.Database.Models
 {
     public class User
     {
