@@ -48,6 +48,12 @@ interface Driver {
   lng: number;
 }
 
+interface FavouriteAddress {
+  id: string;
+  addressName: string;
+  address: string;
+}
+
 const geocodeAddress = async (
   address: string
 ): Promise<{ lat: number; lng: number } | null> => {
@@ -105,6 +111,15 @@ export default function CreateDrive() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
   const position = { lat: 45.254, lng: 19.852 };
+  const [favouriteAddresses, setFavouriteAddresses] = useState<
+    FavouriteAddress[]
+  >([]);
+  const [filteredFavAddresses1, setFilteredFavAddresses1] = useState<
+    FavouriteAddress[]
+  >([]);
+  const [filteredFavAddresses2, setFilteredFavAddresses2] = useState<
+    FavouriteAddress[]
+  >([]);
 
   const navigate = useNavigate();
 
@@ -179,6 +194,30 @@ export default function CreateDrive() {
     fetchDrivers();
   }, [fetchUserData, fetchDrivers]);
 
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+    if (token) {
+      const decodedToken: JwtPayload = jwtDecode(token);
+      fetchFavouriteAddresses(decodedToken.nameid, token);
+    }
+  }, []);
+
+  const fetchFavouriteAddresses = async (userId: string, token: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL_FAV_ADDR_API}/user-fav-addresses/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setFavouriteAddresses(response.data);
+    } catch (error) {
+      setError("Failed to fetch favourite addresses. Please try again.");
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("jwtToken");
     window.location.href = "/login";
@@ -236,18 +275,16 @@ export default function CreateDrive() {
       localStorage.removeItem("driveTime");
       localStorage.removeItem("selectedRouteIndex");
 
-      const driveData = {
-        UserUsername: username,
-        StartingAddress: address1,
-        EndingAddress: address2,
-        RouteIndex: routeIndexValue,
-        Distance: driveDistanceValue,
-        DriveTime: driveTimeValue,
-      };
-
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL_DRIVE_API}/drive`,
-        driveData,
+        {
+          UserUsername: username,
+          StartingAddress: address1,
+          EndingAddress: address2,
+          distance: driveDistanceValue,
+          DriveTime: driveTimeValue,
+          routeIndex: routeIndexValue,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -255,15 +292,63 @@ export default function CreateDrive() {
         }
       );
 
-      if (response.status === 201) {
-        alert("Drive created successfully!");
-        navigate("/dashboard");
-      } else {
-        setError("Failed to create drive. Please try again later.");
-      }
+      const driveData = response.data;
+      navigate(`/dashboard`);
     } catch (error) {
       console.error("Error creating drive:", error);
       setError("Failed to create drive. Please try again later.");
+    }
+  };
+
+  const handleAddress1Change = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const input = e.target.value;
+    setAddress1(input);
+    if (input.length > 2) {
+      setFilteredFavAddresses1(
+        favouriteAddresses.filter((favAddr) =>
+          favAddr.addressName.toLowerCase().includes(input.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredFavAddresses1([]);
+    }
+  };
+
+  const handleAddress2Change = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const input = e.target.value;
+    setAddress2(input);
+    if (input.length > 2) {
+      setFilteredFavAddresses2(
+        favouriteAddresses.filter((favAddr) =>
+          favAddr.addressName.toLowerCase().includes(input.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredFavAddresses2([]);
+    }
+  };
+
+  const handleFavAddressSelect1 = async (address: FavouriteAddress) => {
+    setAddress1(address.address);
+    setFilteredFavAddresses1([]);
+
+    const coords = await geocodeAddress(address.address);
+    if (coords) {
+      setPosition1({ lat: coords.lat, lng: coords.lng });
+    }
+  };
+
+  const handleFavAddressSelect2 = async (address: FavouriteAddress) => {
+    setAddress2(address.address);
+    setFilteredFavAddresses2([]);
+
+    const coords = await geocodeAddress(address.address);
+    if (coords) {
+      setPosition2({ lat: coords.lat, lng: coords.lng });
     }
   };
 
@@ -274,6 +359,8 @@ export default function CreateDrive() {
   if (error) {
     return <div>{error}</div>;
   }
+
+  console.log("Favourite addresses: " + favouriteAddresses);
 
   return (
     <div>
@@ -287,26 +374,63 @@ export default function CreateDrive() {
         <LoadScript googleMapsApiKey={apiKey} libraries={["places"]}>
           <div className="input-container">
             <Autocomplete
-              onLoad={(ref) => (autocomplete1Ref.current = ref)}
+              onLoad={(autocomplete) =>
+                (autocomplete1Ref.current = autocomplete)
+              }
               onPlaceChanged={() =>
                 onPlaceChanged(autocomplete1Ref, setPosition1, setAddress1)
               }
             >
-              <input type="text" placeholder="Enter starting address" />
+              <input
+                type="text"
+                placeholder="Enter starting address"
+                value={address1}
+                onChange={handleAddress1Change}
+              />
             </Autocomplete>
+            {filteredFavAddresses1.length > 0 && (
+              <ul className="fav-address-list">
+                {filteredFavAddresses1.map((favAddr) => (
+                  <li
+                    key={favAddr.id}
+                    onClick={() => handleFavAddressSelect1(favAddr)}
+                  >
+                    {favAddr.addressName} - {favAddr.address}
+                  </li>
+                ))}
+              </ul>
+            )}
             <Autocomplete
-              onLoad={(ref) => (autocomplete2Ref.current = ref)}
+              onLoad={(autocomplete) =>
+                (autocomplete2Ref.current = autocomplete)
+              }
               onPlaceChanged={() =>
                 onPlaceChanged(autocomplete2Ref, setPosition2, setAddress2)
               }
             >
-              <input type="text" placeholder="Enter destination address" />
+              <input
+                type="text"
+                placeholder="Enter destination address"
+                value={address2}
+                onChange={handleAddress2Change}
+              />
             </Autocomplete>
+            {filteredFavAddresses2.length > 0 && (
+              <ul className="fav-address-list">
+                {filteredFavAddresses2.map((favAddr) => (
+                  <li
+                    key={favAddr.id}
+                    onClick={() => handleFavAddressSelect2(favAddr)}
+                  >
+                    {favAddr.addressName} - {favAddr.address}
+                  </li>
+                ))}
+              </ul>
+            )}
             <button className="create-drive-button" onClick={handleCreateDrive}>
               Create Drive
             </button>
           </div>
-
           <br />
           <APIProvider apiKey={apiKey}>
             <Map

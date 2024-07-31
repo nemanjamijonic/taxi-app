@@ -121,7 +121,6 @@ namespace UserService.Controllers
             return Ok(users);
         }
 
-
         [HttpGet("drivers")]
         public async Task<IActionResult> GetAllActiveDrivers()
         {
@@ -183,7 +182,6 @@ namespace UserService.Controllers
             });
         }
 
-
         [HttpPost("update-profile")]
         public async Task<IActionResult> UpdateUserProfile([FromForm] EditProfileDto editProfileDto)
         {
@@ -227,7 +225,6 @@ namespace UserService.Controllers
 
             return Ok(new { message = "Profile updated successfully" });
         }
-
 
         [HttpGet("unverified-drivers")]
         public async Task<IActionResult> GetUnverifiedDrivers()
@@ -314,7 +311,6 @@ namespace UserService.Controllers
             return BadRequest("User is not a driver");
         }
 
-
         [HttpPost("block/{userId}")]
         public async Task<IActionResult> BlockDriver(Guid userId)
         {
@@ -355,7 +351,6 @@ namespace UserService.Controllers
 
             return BadRequest("User is not a driver");
         }
-
 
         [HttpPost("unblock/{userId}")]
         public async Task<IActionResult> UnblockDriver(Guid userId)

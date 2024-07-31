@@ -97,7 +97,7 @@ const DriveItem: React.FC<DriveItemProps> = ({
         <strong>Approx. Drive Duration:</strong> {formatTime(aproximatedTime)}
       </p>
       <p>
-        <strong>Approx. Drive Cost:</strong> {aproximatedCost.toFixed(0)}{" "}
+        <strong>Approx. Drive Cost:</strong> {aproximatedCost.toFixed(2)}{" "}
         (Serbian Dinars)
       </p>
       <p>

@@ -17,6 +17,15 @@ interface FavouriteAddress {
   address: string;
 }
 
+const formatAddress = (address: string) => {
+  return address
+    .replace(/ć/g, "c")
+    .replace(/č/g, "c")
+    .replace(/š/g, "s")
+    .replace(/ž/g, "z")
+    .replace(/đ/g, "dj");
+};
+
 const FavouriteAddresses: React.FC = () => {
   const [addressName, setAddressName] = useState("");
   const [username, setUsername] = useState("");

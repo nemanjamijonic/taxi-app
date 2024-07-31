@@ -75,7 +75,6 @@ namespace DriveService.Controllers
             return Ok(userDrives);
         }
 
-
         [HttpGet("user-drives")]
         public async Task<ActionResult<IEnumerable<Drive>>> GetDrivesByUser()
         {
@@ -101,7 +100,6 @@ namespace DriveService.Controllers
 
             return Ok(userDrives);
         }
-
 
         [HttpGet("new-driver-drives")]
         public async Task<ActionResult<IEnumerable<Drive>>> GetNewDriverDrives()
@@ -177,7 +175,7 @@ namespace DriveService.Controllers
             {
                 StartingAddress = createDriveDto.StartingAddress,
                 EndingAddress = createDriveDto.EndingAddress,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow.AddHours(2),
                 UserUsername = createDriveDto.UserUsername,
                 DriverUsername = "",
                 RouteIndex = createDriveDto.RouteIndex,
@@ -245,7 +243,6 @@ namespace DriveService.Controllers
             return Ok(drive);
         }
 
-
         [HttpPost("accept-drive/{id}")]
         public async Task<ActionResult<Drive>> UserAceptDrive(Guid id)
         {
@@ -279,7 +276,6 @@ namespace DriveService.Controllers
             return Ok(drive);
         }
 
-
         [HttpPost("decline-drive/{id}")]
         public async Task<ActionResult<Drive>> UserDeclineDrive(Guid id)
         {
@@ -312,7 +308,6 @@ namespace DriveService.Controllers
 
             return Ok(drive);
         }
-
 
         [HttpGet("drive/{id}")]
         public async Task<ActionResult<Drive>> GetDriveById(Guid id)
