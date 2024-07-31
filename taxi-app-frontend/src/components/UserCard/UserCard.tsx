@@ -16,6 +16,7 @@ interface UserCardProps {
   onVerify: (userId: string) => void;
   onRejection: (userId: string) => void;
   onBlocking: (userId: string) => void;
+  onUnblocking: (userId: string) => void;
 }
 
 const UserCard: React.FC<UserCardProps> = ({
@@ -23,6 +24,7 @@ const UserCard: React.FC<UserCardProps> = ({
   onVerify,
   onRejection,
   onBlocking,
+  onUnblocking,
 }) => {
   const [averageRating, setAverageRating] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -112,6 +114,9 @@ const UserCard: React.FC<UserCardProps> = ({
         )}
         {user.userState == "1" && user.userType == "2" && (
           <button onClick={() => onBlocking(user.id)}>Block</button>
+        )}
+        {user.userState == "3" && user.userType == "2" && (
+          <button onClick={() => onUnblocking(user.id)}>Unblock</button>
         )}
       </div>
     </div>

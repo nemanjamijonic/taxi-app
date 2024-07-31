@@ -18,13 +18,13 @@ const SendMessageForm: React.FC<SendMessageFormProps> = ({ sendMessage }) => {
     <Form onSubmit={handleSubmit} className="chat-room-input">
       <InputGroup>
         <Form.Control
-          style={{ width: "550px" }}
+          style={{ width: "550px", height: "30px" }}
           onChange={(e) => setMessage(e.target.value)}
           value={msg}
           placeholder="Enter a message"
         />
         <Button
-          style={{ color: "white", backgroundColor: "#40a8ff", width: "580px" }}
+          style={{ color: "white", backgroundColor: "#40a8ff", width: "560px" }}
           type="submit"
           disabled={!msg}
         >

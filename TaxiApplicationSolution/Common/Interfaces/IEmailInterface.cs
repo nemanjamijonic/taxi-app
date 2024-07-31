@@ -13,5 +13,6 @@ namespace Common.Interfaces
         Task<bool> DriverVerificationEmail(EmailInfo emailInfo);
         Task<bool> DriverRejectionEmail(EmailInfo emailInfo);
         Task<bool> DriverBlockingEmail(EmailInfo emailInfo);
+        Task<bool> DriverUnblockingEmail(EmailInfo emailInfo);
     }
 }

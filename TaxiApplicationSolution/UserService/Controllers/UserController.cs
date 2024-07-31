@@ -350,12 +350,53 @@ namespace UserService.Controllers
 
                 var emailSent = await emailServiceProxy.DriverBlockingEmail(emailInfo);
 
-                return Ok("Succesfully validated driver!");
+                return Ok("Succesfully blocked driver!");
             }
 
             return BadRequest("User is not a driver");
         }
 
+
+        [HttpPost("unblock/{userId}")]
+        public async Task<IActionResult> UnblockDriver(Guid userId)
+        {
+            var user = await _userDbContext.Users.FindAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            if (user.UserType == UserType.Driver)
+            {
+                if (user.UserState == UserState.Verified)
+                {
+                    return BadRequest("Driver already unblocked.");
+                }
+                user.UserState = UserState.Verified;
+                await _userDbContext.SaveChangesAsync();
+
+                EmailInfo emailInfo = new EmailInfo()
+                {
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Id = userId,
+                    UserType = user.UserType.ToString()
+                };
+
+                var emailServiceProxy = ServiceProxy.Create<IEmailInterface>(
+                new Uri("fabric:/TaxiApplication/EmailService")
+               );
+
+                var emailSent = await emailServiceProxy.DriverUnblockingEmail(emailInfo);
+
+                return Ok("Succesfully validated driver!");
+            }
+
+            return BadRequest("User is not a driver");
+        }
 
         [HttpPost("reject/{userId}")]
         public async Task<IActionResult> RejectDriver(Guid userId)

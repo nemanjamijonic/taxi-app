@@ -77,6 +77,7 @@ const Verification: React.FC = () => {
   };
 
   const handleBlocking = () => {};
+  const handleUnblock = () => {};
 
   const handleVerify = async (userId: string) => {
     const token = localStorage.getItem("jwtToken");
@@ -163,6 +164,7 @@ const Verification: React.FC = () => {
                 onVerify={handleVerify}
                 onRejection={handleRejection}
                 onBlocking={handleBlocking}
+                onUnblocking={handleUnblock}
               />
             ))}
           </div>

@@ -152,6 +152,31 @@ const AllUsers: React.FC = () => {
       console.error("Error blocking user:", error);
     }
   };
+  const handleUnblock = async (userId: string) => {
+    const token = localStorage.getItem("jwtToken");
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL_USER_API}/unblock/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id == userId ? { ...user, userState: "1" } : user
+          )
+        );
+      } else {
+        console.error("Error unblocking user:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error unblocking user:", error);
+    }
+  };
 
   return (
     <div>
@@ -171,6 +196,7 @@ const AllUsers: React.FC = () => {
               onVerify={handleVerify}
               onRejection={handleRejection}
               onBlocking={handleBlock}
+              onUnblocking={handleUnblock}
             />
           ))}
         </div>

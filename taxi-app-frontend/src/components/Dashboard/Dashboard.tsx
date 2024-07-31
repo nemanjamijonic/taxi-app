@@ -61,7 +61,7 @@ const Dashboard: React.FC = () => {
       const decodedToken: any = jwtDecode(token);
       const userId = decodedToken.nameid;
       const userRole = decodedToken.role;
-
+      console.log("UserRole: " + userRole);
       const userResponse = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL_USER_API}/user`,
         {
@@ -290,8 +290,16 @@ const Dashboard: React.FC = () => {
         <h1>
           Welcome to Dashboard, <b>{username}</b>
         </h1>
+
         <p>
-          <strong>User Type:</strong> {userType == "1" ? "User" : "Driver"}
+          <strong>User Type: </strong>
+          {userType == "0"
+            ? "Admin"
+            : userType == "1"
+            ? "User"
+            : userType == "2"
+            ? "Driver"
+            : "Unknown"}
         </p>
         <p>
           <strong>User Status:</strong>{" "}

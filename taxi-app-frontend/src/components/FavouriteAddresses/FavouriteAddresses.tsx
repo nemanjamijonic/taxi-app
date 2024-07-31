@@ -193,6 +193,7 @@ const FavouriteAddresses: React.FC = () => {
         const decodedToken: DecodedToken = jwtDecode(token);
         const userId = decodedToken.nameid;
         fetchFavouriteAddresses(userId, token); // Refresh the list after deleting an address
+        setAddressName("");
       }
     } catch (error) {
       setError("Failed to delete address. Please try again.");
@@ -208,13 +209,16 @@ const FavouriteAddresses: React.FC = () => {
         onLogout={handleLogout}
       />
       <div className="favourite-addresses-container">
-        <h2>{editMode ? "Edit Favourite Address" : "Add Favourite Address"}</h2>
+        <h2 style={{ color: "#0056b3" }}>
+          {editMode ? "Edit Favourite Address" : "Add Favourite Address"}
+        </h2>
         <form className="favourite-addresses-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="addressName">Address Name:</label>
             <input
               type="text"
               id="addressName"
+              className="favourite-addresses-input"
               placeholder="Enter Address Name"
               value={addressName}
               onChange={(e) => setAddressName(e.target.value)}
@@ -236,6 +240,7 @@ const FavouriteAddresses: React.FC = () => {
                 <input
                   type="text"
                   id="address"
+                  className="favourite-addresses-input"
                   ref={addressInputRef}
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
@@ -253,7 +258,7 @@ const FavouriteAddresses: React.FC = () => {
         <h3>Your Favourite Addresses</h3>
         <table className="address-table">
           <thead>
-            <tr>
+            <tr style={{ color: "#0056b3" }}>
               <th>Address Name</th>
               <th>Address</th>
               <th>Actions</th>

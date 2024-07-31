@@ -204,7 +204,6 @@ namespace DriveService.Controllers
             return CreatedAtAction(nameof(GetDriveById), new { id = drive.Id }, drive);
         }
 
-
         [HttpPost("create-offer/{id}")]
         public async Task<ActionResult<Drive>> DriverMakesOffer(Guid id, [FromBody] CreateOfferDto createOfferDto)
         {

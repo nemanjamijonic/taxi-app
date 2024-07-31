@@ -104,6 +104,7 @@ const Register: React.FC = () => {
     >
       <div className="register-container">
         <form
+          style={{ marginRight: "-20px" }}
           onSubmit={handleSubmit(onSubmit)}
           className="register-form"
           encType="multipart/form-data"
@@ -177,6 +178,7 @@ const Register: React.FC = () => {
           <div className="form-group">
             <label>User Type</label>
             <select
+              style={{ marginLeft: "-30px" }}
               className="form-group-select"
               {...register("userType", { required: true })}
             >
@@ -198,6 +200,7 @@ const Register: React.FC = () => {
             Register
           </button>
           <div className="google-login">
+            <p style={{ color: "#007b83" }}>Google Register</p>
             <GoogleLogin
               onSuccess={onGoogleSuccess}
               onError={() => {

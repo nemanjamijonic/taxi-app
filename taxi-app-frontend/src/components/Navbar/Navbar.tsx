@@ -35,6 +35,9 @@ const Navbar: React.FC<NavbarProps> = ({
         <span onClick={() => handleNavigation("/profile")}>Profile</span>
         {userType == "0" && (
           <>
+            <span onClick={() => handleNavigation("/dashboard")}>
+              Dashboard
+            </span>
             <span onClick={() => handleNavigation("/verification")}>
               Verification List
             </span>
