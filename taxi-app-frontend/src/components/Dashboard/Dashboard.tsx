@@ -130,7 +130,8 @@ const Dashboard: React.FC = () => {
             }
           )
           .then(() => {
-            setRideTimeLeft(userDrive.aproximatedTime);
+            //setRideTimeLeft(userDrive.aproximatedTime);
+            setRideTimeLeft(60);
             fetchUserData();
           })
           .catch((error) =>

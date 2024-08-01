@@ -3,7 +3,7 @@ import { Container } from "react-bootstrap";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import ChatRoom from "./ChatRoom";
 import { jwtDecode } from "jwt-decode";
-import "./ChatApp.css"; // Import the new CSS file
+import "./ChatApp.css";
 
 interface Message {
   username: string;
@@ -30,6 +30,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ username, chatroom }) => {
           return;
         }
         const decodedToken: any = jwtDecode(token);
+        const userId = decodedToken.nameid;
         const userType = decodedToken.role;
         const newMessage: Message = {
           username,
@@ -46,17 +47,36 @@ const ChatApp: React.FC<ChatAppProps> = ({ username, chatroom }) => {
 
   useEffect(() => {
     const joinChatRoom = async () => {
+      if (conn) return; // Avoid creating multiple connections
       try {
         const connection = new HubConnectionBuilder()
           .withUrl("https://localhost:44381/chat")
           .build();
 
         connection.on("JoinSpecificChatRoom", (message) => {
-          setMessages((prevMessages) => [...prevMessages, message]);
+          setMessages((prevMessages) => {
+            const messageExists = prevMessages.some(
+              (msg) =>
+                msg.username === message.username &&
+                msg.msg === message.msg &&
+                msg.createdAt === message.createdAt
+            );
+            if (messageExists) return prevMessages;
+            return [...prevMessages, message];
+          });
         });
 
         connection.on("ReceiveSpecificMessage", (message) => {
-          setMessages((prevMessages) => [...prevMessages, message]);
+          setMessages((prevMessages) => {
+            const messageExists = prevMessages.some(
+              (msg) =>
+                msg.username === message.username &&
+                msg.msg === message.msg &&
+                msg.createdAt === message.createdAt
+            );
+            if (messageExists) return prevMessages;
+            return [...prevMessages, message];
+          });
         });
 
         await connection.start();
@@ -74,10 +94,12 @@ const ChatApp: React.FC<ChatAppProps> = ({ username, chatroom }) => {
 
     return () => {
       if (conn) {
+        conn.off("JoinSpecificChatRoom");
+        conn.off("ReceiveSpecificMessage");
         conn.stop();
       }
     };
-  }, [username]);
+  }, [username, chatroom, conn]);
 
   return (
     <Container className="chat-app-container">

@@ -26,7 +26,7 @@ function Directions({
     if (routesLibrary && map) {
       setDirectionService(new routesLibrary.DirectionsService());
       setDirectionsRendered(new routesLibrary.DirectionsRenderer({ map }));
-      setMarker(new google.maps.Marker({ map, label: "Driver" }));
+      setMarker(new google.maps.Marker({ map, label: "Selected Drive Route" }));
     }
   }, [routesLibrary, map]);
 
@@ -70,8 +70,11 @@ function Directions({
       let currentPoint = currentStep.start_location;
       let nextPoint = currentStep.end_location;
       let distanceTraveled = 0;
-      const segmentLength = 200; // Length of each segment in meters
+      const totalDuration = 2100; // Total duration in milliseconds
+      console.log("Steps lenght: " + steps.length);
+      const segmentDuration = totalDuration / steps.length; // Duration for each step
       let intervalId: number;
+      console.log("Segment duration: " + segmentDuration);
 
       const haversineDistance = (
         point1: google.maps.LatLng,
@@ -108,7 +111,7 @@ function Directions({
       const moveMarker = () => {
         const stepDistance = haversineDistance(currentPoint, nextPoint);
 
-        if (distanceTraveled + segmentLength >= stepDistance) {
+        if (distanceTraveled >= stepDistance) {
           marker.setPosition(nextPoint);
           distanceTraveled = 0;
           currentStepIndex++;
@@ -121,14 +124,14 @@ function Directions({
             clearInterval(intervalId);
           }
         } else {
-          const fraction = segmentLength / stepDistance;
+          const fraction = segmentDuration / totalDuration;
           currentPoint = interpolate(currentPoint, nextPoint, fraction);
           marker.setPosition(currentPoint);
-          distanceTraveled += segmentLength;
+          distanceTraveled += stepDistance * fraction;
         }
       };
 
-      intervalId = window.setInterval(moveMarker, 1000);
+      intervalId = window.setInterval(moveMarker, segmentDuration);
 
       return () => clearInterval(intervalId);
     }

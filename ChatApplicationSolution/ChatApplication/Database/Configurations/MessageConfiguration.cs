@@ -9,20 +9,23 @@ namespace ChatApplication.Database.Configurations
         public void Configure(EntityTypeBuilder<Message> builder)
         {
             builder.HasKey(m => m.Id);
-            builder.Property(m => m.Content)
+
+            builder.Property(m => m.Id)
+                .IsRequired()
+                .ValueGeneratedOnAdd();
+
+            builder.Property(m => m.MessageContent)
                    .IsRequired();
-            builder.Property(m => m.UserId)
+
+            builder.Property(m => m.UserType)
                    .IsRequired();
-            builder.Property(m => m.UserName)
+
+            builder.Property(m => m.Username)
                    .IsRequired()
                    .HasMaxLength(50);
-            builder.Property(m => m.SentAt)
+
+            builder.Property(m => m.CreatedAt)
                    .IsRequired();
-            builder.Property(m => m.ChatRoomId)
-                   .IsRequired();
-            builder.Property(m => m.ChatRoomName)
-                   .IsRequired()
-                   .HasMaxLength(100);
 
         }
     }

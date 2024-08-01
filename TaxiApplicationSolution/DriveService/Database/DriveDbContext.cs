@@ -12,6 +12,7 @@ namespace DriveService.Database
 
         public DbSet<Drive> Drives { get; set; }
         public DbSet<DriverRating> DriverRatings { get; set; }
+        public DbSet<CurrentLocation> CurrentLocations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -19,6 +20,7 @@ namespace DriveService.Database
 
             modelBuilder.ApplyConfiguration(new DriveConfiguration());
             modelBuilder.ApplyConfiguration(new DriverRatingConfiguration());
+            modelBuilder.ApplyConfiguration(new CurrentLocationConfiguration());
         }
     }
 }

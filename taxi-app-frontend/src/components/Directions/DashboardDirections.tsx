@@ -6,9 +6,11 @@ import { useMapsLibrary, useMap } from "@vis.gl/react-google-maps";
 function DashboardDirections({
   address1,
   address2,
+  routeIndex,
 }: {
   address1: string;
   address2: string;
+  routeIndex: number;
 }) {
   const map = useMap();
   const routesLibrary = useMapsLibrary("routes");
@@ -17,7 +19,6 @@ function DashboardDirections({
   const [directionsRendered, setDirectionsRendered] =
     useState<google.maps.DirectionsRenderer>();
   const [routes, setRoutes] = useState<google.maps.DirectionsRoute[]>([]);
-  const [routeIndex, setRouteIndex] = useState(0);
   const [marker, setMarker] = useState<google.maps.Marker>();
   const selected = routes[routeIndex];
   const leg = selected?.legs[0];
@@ -55,12 +56,12 @@ function DashboardDirections({
   }, [directionService, directionsRendered, address1, address2]);
 
   useEffect(() => {
-    if (directionsRendered) {
+    if (directionsRendered && routes.length > 0) {
       console.log("Route index: " + routeIndex);
       localStorage.setItem("selectedRouteIndex", routeIndex.toString());
       directionsRendered.setRouteIndex(routeIndex);
     }
-  }, [routeIndex, directionsRendered]);
+  }, [routeIndex, directionsRendered, routes.length]);
 
   useEffect(() => {
     if (leg && marker) {
@@ -143,11 +144,6 @@ function DashboardDirections({
     }
   }, [leg]);
 
-  const handleRouteSelection = (index: number) => {
-    setRouteIndex(index);
-    localStorage.setItem("selectedRouteIndex", index.toString());
-  };
-
   if (!leg) return null;
 
   return (
@@ -172,20 +168,6 @@ function DashboardDirections({
           <b style={{ color: "#007bff" }}>Distance:</b> {leg.distance?.text}
         </p>
       </div>
-      <h2 style={{ color: "#007bff" }}>Other routes:</h2>
-      <ul className="route-list">
-        {routes.map((route, index) => (
-          <li key={route.summary} className="route-item">
-            <button
-              style={{ width: "70%" }}
-              onClick={() => handleRouteSelection(index)}
-              className="route-button"
-            >
-              {route.summary}
-            </button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

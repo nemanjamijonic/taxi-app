@@ -5,11 +5,9 @@ namespace ChatApplication.Database.Models
     public class Message
     {
         public Guid Id { get; set; }
-        public string Content { get; set; }
-        public Guid UserId { get; set; }
-        public string UserName { get; set; }
-        public DateTime SentAt { get; set; }
-        public Guid ChatRoomId { get; set; }
-        public string ChatRoomName { get; set; }
+        public string Username { get; set; }
+        public string MessageContent { get; set; }
+        public string UserType { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
