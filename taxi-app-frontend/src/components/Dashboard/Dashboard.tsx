@@ -287,32 +287,47 @@ const Dashboard: React.FC = () => {
         onLogout={handleLogout}
       />
       <div className="dashboard-container">
-        <h1>
-          Welcome to Dashboard, <b>{username}</b>
-        </h1>
+        {userDrive && userDrive.driveState != "4" ? (
+          <p>
+            <strong>User Type: </strong>
+            {userType == "0"
+              ? "Admin"
+              : userType == "1"
+              ? "User"
+              : userType == "2"
+              ? "Driver"
+              : "Unknown"}
+          </p>
+        ) : (
+          <div>
+            <h1>
+              Welcome to Dashboard, <b>{username}</b>
+            </h1>
 
-        <p>
-          <strong>User Type: </strong>
-          {userType == "0"
-            ? "Admin"
-            : userType == "1"
-            ? "User"
-            : userType == "2"
-            ? "Driver"
-            : "Unknown"}
-        </p>
-        <p>
-          <strong>User Status:</strong>{" "}
-          {userState == "0"
-            ? "Created"
-            : userState == "1"
-            ? "Verified"
-            : userState == "2"
-            ? "Rejected"
-            : userState == "3"
-            ? "Blocked"
-            : "Unknown"}
-        </p>
+            <p>
+              <strong>User Type: </strong>
+              {userType == "0"
+                ? "Admin"
+                : userType == "1"
+                ? "User"
+                : userType == "2"
+                ? "Driver"
+                : "Unknown"}
+            </p>
+            <p>
+              <strong>User Status:</strong>{" "}
+              {userState == "0"
+                ? "Created"
+                : userState == "1"
+                ? "Verified"
+                : userState == "2"
+                ? "Rejected"
+                : userState == "3"
+                ? "Blocked"
+                : "Unknown"}
+            </p>
+          </div>
+        )}
 
         {userDrive && userDrive.driveState != "5" ? (
           <div>

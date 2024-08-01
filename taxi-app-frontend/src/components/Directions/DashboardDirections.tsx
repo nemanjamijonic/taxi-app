@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useMapsLibrary, useMap } from "@vis.gl/react-google-maps";
 
-function Directions({
+function DashboardDirections({
   address1,
   address2,
 }: {
@@ -190,4 +190,4 @@ function Directions({
   );
 }
 
-export default Directions;
+export default DashboardDirections;
