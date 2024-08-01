@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import ChatRoom from "./ChatRoom";
+import { jwtDecode } from "jwt-decode";
 import "./ChatApp.css"; // Import the new CSS file
 
 interface Message {
   username: string;
   msg: string;
+  createdAt: string;
+  userType: string;
 }
 
 interface ChatAppProps {
@@ -21,7 +24,20 @@ const ChatApp: React.FC<ChatAppProps> = ({ username, chatroom }) => {
   const sendMessage = async (message: string) => {
     try {
       if (conn) {
-        await conn.invoke("SendMessage", message);
+        const token = localStorage.getItem("jwtToken");
+        if (!token) {
+          console.log("No token found");
+          return;
+        }
+        const decodedToken: any = jwtDecode(token);
+        const userType = decodedToken.role;
+        const newMessage: Message = {
+          username,
+          msg: message,
+          createdAt: new Date().toISOString(),
+          userType,
+        };
+        await conn.invoke("SendMessage", newMessage);
       }
     } catch (e) {
       console.log(e);
@@ -35,15 +51,12 @@ const ChatApp: React.FC<ChatAppProps> = ({ username, chatroom }) => {
           .withUrl("https://localhost:44381/chat")
           .build();
 
-        connection.on("JoinSpecificChatRoom", (admin, msg) => {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { username: admin, msg },
-          ]);
+        connection.on("JoinSpecificChatRoom", (message) => {
+          setMessages((prevMessages) => [...prevMessages, message]);
         });
 
-        connection.on("ReceiveSpecificMessage", (username, msg) => {
-          setMessages((prevMessages) => [...prevMessages, { username, msg }]);
+        connection.on("ReceiveSpecificMessage", (message) => {
+          setMessages((prevMessages) => [...prevMessages, message]);
         });
 
         await connection.start();

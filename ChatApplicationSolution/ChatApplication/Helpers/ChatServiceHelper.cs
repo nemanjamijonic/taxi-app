@@ -33,17 +33,16 @@ namespace ChatApplication.Helpers
             return chatRoom;
         }
 
-        public async Task<Message> SaveMessageAsync(string chatRoomName, Guid userId, string userName, string content)
+        public async Task<Message> SaveMessageAsync(string chatRoomName, Guid userId, string userName, string content, DateTime createdAt)
         {
-            var chatRoom = _context.ChatRooms.Where(cr => cr.Name == chatRoomName).FirstOrDefault();
 
             var message = new Message
             {
                 Content = content,
                 UserId = userId,
                 UserName = userName,
-                ChatRoomId = chatRoom.Id,
-                SentAt = DateTime.UtcNow,
+                ChatRoomId = Guid.Parse(chatRoomName),
+                SentAt = createdAt,
                 ChatRoomName = chatRoomName
             };
 

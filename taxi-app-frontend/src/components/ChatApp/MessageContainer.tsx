@@ -4,6 +4,8 @@ import { Table } from "react-bootstrap";
 interface Message {
   username: string;
   msg: string;
+  createdAt: string;
+  userType: string;
 }
 
 interface MessageContainerProps {
@@ -23,12 +25,17 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ messages }) => {
                     border: "2px solid #ddd",
                     borderRadius: "10px",
                     padding: "10px",
-                    backgroundColor: "#f9f9f9",
+                    backgroundColor:
+                      msg.username === "admin"
+                        ? "#fa5407" // red for admin messages
+                        : msg.userType === "User"
+                        ? "#5693f5" // blue for user messages
+                        : "#07fa40", // green for driver messages
+                    color: "#fff",
                     marginBottom: "-10px",
                   }}
                 >
-                  <strong style={{ color: "#40a8ff" }}>{msg.username}:</strong>{" "}
-                  <span style={{ color: "#6c7e8c" }}>{msg.msg}</span>
+                  <strong>{msg.username}:</strong> <span>{msg.msg}</span>
                   <span
                     style={{
                       display: "block",
@@ -39,7 +46,9 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ messages }) => {
                       fontWeight: "normal",
                     }}
                   >
-                    Sent at: {new Date().toLocaleTimeString()}
+                    <b style={{ color: "#080808" }}>
+                      Sent at: {new Date(msg.createdAt).toLocaleTimeString()}
+                    </b>
                   </span>
                 </p>
               </td>

@@ -75,3 +75,46 @@
   background-color: #18364d;
   width: 100%;
 }
+
+.chat-legend-container {
+  background-color: #1e2a38;
+  border-radius: 10px;
+  padding: 15px;
+  color: #ffffff;
+  width: fit-content;
+  margin-bottom: 20px;
+}
+
+.chat-legend-header {
+  font-size: 1.5em;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  color: #45d9f5;
+}
+
+.chat-legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.chat-legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.color-admin {
+  background-color: #fa5407;
+}
+
+.color-user {
+  background-color: #5693f5;
+}
+
+.color-driver {
+  background-color: #07fa40;
+}

@@ -24,7 +24,7 @@ const formatTime = (timeInSeconds: number): string => {
   const minutes = Math.floor(timeInSeconds / 60);
   const seconds = timeInSeconds % 60;
   if (minutes === 0) {
-    return `${seconds}seconds`;
+    return `${seconds} seconds`;
   } else if (seconds === 0) {
     return `${minutes} minutes`;
   }
@@ -121,7 +121,7 @@ const DriveItem: React.FC<DriveItemProps> = ({
         <>
           <hr></hr>
           <div>
-            <p> Driver Arrival time: </p>
+            <p> Driver Arrival Time (In Minutes): </p>
             <input
               style={{ border: "2px solid", padding: "10px" }}
               type="number"

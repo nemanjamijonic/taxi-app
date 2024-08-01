@@ -1,11 +1,13 @@
 import React from "react";
-import { Row, Col } from "react-bootstrap";
 import MessageContainer from "./MessageContainer";
 import SendMessageForm from "./SendMessageForm";
+import ChatLegend from "./ChatLegend";
 
 interface Message {
   username: string;
   msg: string;
+  createdAt: string;
+  userType: string;
 }
 
 interface ChatRoomProps {
@@ -16,8 +18,10 @@ interface ChatRoomProps {
 const ChatRoom: React.FC<ChatRoomProps> = ({ messages, sendMessage }) => (
   <div className="chat-room-container">
     <div className="chat-room-header">
-      <h2>Chat Room</h2>
+      <h2 style={{ color: "#45d9f5" }}>Drive Chat Room</h2>
     </div>
+    <ChatLegend></ChatLegend>
+
     <div className="chat-room-body">
       <div className="message-container-wrapper">
         <MessageContainer messages={messages} />
