@@ -1,23 +1,23 @@
 .user-card {
   border: 1px solid #ccc;
-  padding: 20px; /* Increased padding for better spacing */
-  max-width: 400px; /* Reduce max-width to better fit items on smaller screens */
+  padding: 20px;
+  max-width: 400px;
   width: 100%;
   color: #333;
-  border-radius: 8px; /* Rounded corners */
-  background-color: #fff; /* White background for better contrast */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  transition: transform 0.2s; /* Smooth hover effect */
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
 }
 
 .user-card:hover {
-  transform: scale(1.05); /* Slight lift effect on hover */
+  transform: scale(1.05);
 }
 
 .user-card p {
   text-align: left;
   margin: 5px 0;
-  font-size: 1rem; /* Standard font size */
+  font-size: 1rem;
 }
 
 .user-card hr {
@@ -31,24 +31,20 @@
 .user-card button {
   background-color: #007bff;
   color: #fff;
-  margin-top: 10px; /* Reduce margin to fit better */
-  width: 100%; /* Adjust button width */
+  margin-top: 10px;
+  width: 100%;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s; /* Add transition for hover effect */
-}
-
-.user-card-actions buton {
-  color: red;
-  width: 60%;
+  transition: background-color 0.3s;
 }
 
 .user-card button:hover {
   background-color: #0056b3;
 }
 
-.user-card:hover {
-  transition: transform(1.05); /* Slight lift effect on hover */
+.user-card-actions button {
+  margin-top: 10px;
+  width: 100%;
 }

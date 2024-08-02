@@ -127,6 +127,7 @@ export default function CreateDrive() {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
       setError("User not authenticated");
+      navigate("/login");
       setLoading(false);
       return;
     }
@@ -249,6 +250,7 @@ export default function CreateDrive() {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
         setError("User not authenticated");
+        navigate("/login");
         return;
       }
 

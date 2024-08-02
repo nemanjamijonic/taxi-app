@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // Correct the import
+import { jwtDecode } from "jwt-decode";
 import Navbar from "../Navbar/Navbar";
 import UserCard from "../UserCard/UserCard";
 import "./AllUsers.css";
@@ -152,6 +152,7 @@ const AllUsers: React.FC = () => {
       console.error("Error blocking user:", error);
     }
   };
+
   const handleUnblock = async (userId: string) => {
     const token = localStorage.getItem("jwtToken");
     try {
@@ -187,7 +188,7 @@ const AllUsers: React.FC = () => {
         onLogout={handleLogout}
       />
       <div className="user-list">
-        <h2>All Users</h2>
+        <h1>All Users</h1>
         <div className="user-list-container">
           {users.map((user) => (
             <UserCard

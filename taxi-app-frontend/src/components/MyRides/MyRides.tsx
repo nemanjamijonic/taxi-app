@@ -34,6 +34,7 @@ const MyRides: React.FC = () => {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
       setError("User not authenticated");
+      navigate("/login");
       setLoading(false);
       return;
     }
@@ -71,6 +72,7 @@ const MyRides: React.FC = () => {
     if (!token) {
       setError("User not authenticated");
       setLoading(false);
+      navigate("/login");
       return;
     }
 

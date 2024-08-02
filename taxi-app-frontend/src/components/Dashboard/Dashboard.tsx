@@ -288,7 +288,7 @@ const Dashboard: React.FC = () => {
         onLogout={handleLogout}
       />
       <div className="dashboard-container">
-        {userDrive && userDrive.driveState != "4" ? (
+        {userDrive && userDrive.driveState == "4" ? (
           <p>
             <strong>User Type: </strong>
             {userType == "0"
@@ -304,7 +304,6 @@ const Dashboard: React.FC = () => {
             <h1>
               Welcome to Dashboard, <b>{username}</b>
             </h1>
-
             <p>
               <strong>User Type: </strong>
               {userType == "0"
@@ -362,7 +361,7 @@ const Dashboard: React.FC = () => {
             />
           </div>
         ) : (
-          <p>No active drive.</p>
+          (userType == "1" || userType == "2") && <p>No active drive.</p>
         )}
 
         {completionMessage && (

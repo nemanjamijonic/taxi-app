@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import DriveItem from "../DriveItem/DriveItem";
 import Navbar from "../Navbar/Navbar";
-import "./AllDrives.css"; // Add any necessary styles for the list
+import "./AllDrives.css";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
@@ -12,11 +12,11 @@ type Drive = {
   endingAddress: string;
   createdAt: string;
   userUsername: string;
-  driveDistance: number;
-  driverArrivalTime: number;
   driverUsername: string;
+  driverArrivalTime: number;
   aproximatedTime: number;
   aproximatedCost: number;
+  driveDistance: number;
   driveState: string;
   userType: string;
 };
@@ -34,11 +34,12 @@ const AllDrives: React.FC = () => {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
       setError("User not authenticated");
+      navigate("/login");
       setLoading(false);
       return;
     }
     const decodedToken: any = jwtDecode(token);
-    if (decodedToken.role != "Admin") {
+    if (decodedToken.role !== "Admin") {
       navigate("/dashboard");
     }
     try {
@@ -51,7 +52,6 @@ const AllDrives: React.FC = () => {
         }
       );
       const userData = response.data;
-      const decodedToken: any = jwtDecode(token);
       const userId = decodedToken.nameid;
       setUsername(userData.username);
       setUserType(userData.userType);
@@ -62,12 +62,13 @@ const AllDrives: React.FC = () => {
       console.error("Error fetching user data:", error);
       setError("Failed to fetch user data. Please try again later.");
     }
-  }, []);
+  }, [navigate]);
 
   const fetchDrives = useCallback(async () => {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
       setError("User not authenticated");
+      navigate("/login");
       setLoading(false);
       return;
     }
@@ -122,24 +123,26 @@ const AllDrives: React.FC = () => {
         {drives.length === 0 ? (
           <p>No drives available.</p>
         ) : (
-          drives.map((drive) => (
-            <DriveItem
-              key={drive.id}
-              id={drive.id}
-              startingAddress={drive.startingAddress}
-              endingAddress={drive.endingAddress}
-              createdAt={drive.createdAt}
-              userUsername={drive.userUsername}
-              driverUsername={drive.driverUsername}
-              driverArrivalTime={drive.driverArrivalTime}
-              aproximatedTime={drive.aproximatedTime}
-              driveDistance={drive.driveDistance}
-              aproximatedCost={drive.aproximatedCost}
-              driveState={drive.driveState}
-              userType={drive.userType}
-              userState=""
-            />
-          ))
+          <div className="drive-grid">
+            {drives.map((drive) => (
+              <DriveItem
+                key={drive.id}
+                id={drive.id}
+                startingAddress={drive.startingAddress}
+                endingAddress={drive.endingAddress}
+                createdAt={drive.createdAt}
+                userUsername={drive.userUsername}
+                driverUsername={drive.driverUsername}
+                driverArrivalTime={drive.driverArrivalTime}
+                aproximatedTime={drive.aproximatedTime}
+                driveDistance={drive.driveDistance}
+                aproximatedCost={drive.aproximatedCost}
+                driveState={drive.driveState}
+                userType={drive.userType}
+                userState=""
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>

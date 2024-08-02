@@ -24,7 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <nav className="navbar">
-      <div className="navbar-logo">
+      <div className="navbar-logo" title="Taxi Application Nemanja Mijonić">
         <img
           src="/taxi-logo.png"
           alt="Taxi App Logo"
