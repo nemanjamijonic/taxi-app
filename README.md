@@ -1,6 +1,6 @@
-# TaxiApp
+# taxi-app
 
-TaxiApp is a microservices-based taxi application built using Microsoft Service Fabric. This project includes multiple services that communicate with each other using Microsoft.ServiceFabric.Services.Remoting. The application is developed in .NET Core and uses EntityFramework for database management.
+taxi-app is a microservices-based taxi application built using Microsoft Service Fabric. This project includes multiple services that communicate with each other using Microsoft.ServiceFabric.Services.Remoting. The application is developed in .NET Core and uses EntityFramework for database management.
 
 ## Contents
 
@@ -41,7 +41,7 @@ TaxiApp is designed to manage taxi bookings with different user roles: Admin, Us
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/M1jonicN/TaxiApp.git
+   git clone https://github.com/nemanjamijonic/taxi-app.git
    cd TaxiApp
 
    ```
